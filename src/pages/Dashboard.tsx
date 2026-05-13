@@ -116,7 +116,8 @@ export function Dashboard({
                 Category coverage
               </h2>
               <p className="mt-2 text-sm text-body">
-                Each area starts with 10 interview-style prompts.
+                The seed bank starts broad, and the physical-design pack adds deeper
+                timing, routing, and signoff coverage.
               </p>
             </div>
             <CategoryBadge category="GitHub Pages ready" />

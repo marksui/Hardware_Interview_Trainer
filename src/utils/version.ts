@@ -1,8 +1,19 @@
-export const APP_VERSION = "1.1.1";
+export const APP_VERSION = "1.2.0";
 
 export const RELEASE_DATE = "2026-05-13";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.0",
+    date: "2026-05-13",
+    title: "Physical design interview pack",
+    changes: [
+      "Added 50 original physical-design interview questions adapted from a downloaded study PDF's topic coverage.",
+      "Expanded coverage across STA, placement, routing, CDC, synthesis, EM/IR, DVFS, advanced-node DRC, clock mesh, and 3DIC topics.",
+      "Reduced bright pastel badge colors in dark mode for a calmer technical UI.",
+      "Updated the question bank total to 130 questions.",
+    ],
+  },
   {
     version: "1.1.1",
     date: "2026-05-13",

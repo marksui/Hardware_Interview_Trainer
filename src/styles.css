@@ -185,6 +185,36 @@ textarea:focus-visible {
   :root[data-theme="dark"] .badge-pill.bg-rose-100,
   :root[data-theme="dark"] .badge-pill.bg-violet-100,
   :root[data-theme="dark"] .badge-pill.bg-amber-100 {
-    color: #111111;
+    border: 1px solid transparent;
+  }
+
+  :root[data-theme="dark"] .badge-pill.bg-emerald-100 {
+    border-color: rgba(16, 185, 129, 0.22);
+    background-color: rgba(16, 185, 129, 0.14);
+    color: rgb(110, 231, 183);
+  }
+
+  :root[data-theme="dark"] .badge-pill.bg-orange-100 {
+    border-color: rgba(249, 115, 22, 0.24);
+    background-color: rgba(249, 115, 22, 0.14);
+    color: rgb(253, 186, 116);
+  }
+
+  :root[data-theme="dark"] .badge-pill.bg-rose-100 {
+    border-color: rgba(244, 63, 94, 0.24);
+    background-color: rgba(244, 63, 94, 0.14);
+    color: rgb(253, 164, 175);
+  }
+
+  :root[data-theme="dark"] .badge-pill.bg-violet-100 {
+    border-color: rgba(139, 92, 246, 0.24);
+    background-color: rgba(139, 92, 246, 0.15);
+    color: rgb(196, 181, 253);
+  }
+
+  :root[data-theme="dark"] .badge-pill.bg-amber-100 {
+    border-color: rgba(245, 158, 11, 0.24);
+    background-color: rgba(245, 158, 11, 0.14);
+    color: rgb(252, 211, 77);
   }
 }

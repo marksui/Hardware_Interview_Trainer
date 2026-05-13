@@ -1,10 +1,10 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.1.1`
+**Current app version:** `v1.2.0`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
-The app combines an interview question bank, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
+The app combines a 130-question interview bank, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
 
 ## Motivation
 
@@ -302,6 +302,13 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.0 - 2026-05-13
+
+- Added 50 original physical-design interview questions adapted from a downloaded study PDF's topic coverage.
+- Expanded coverage across STA, placement, routing, CDC, synthesis, EM/IR, DVFS, advanced-node DRC, clock mesh, and 3DIC topics.
+- Reduced bright pastel badge colors in dark mode for a calmer technical UI.
+- Updated the question bank total to 130 questions.
 
 ### v1.1.1 - 2026-05-13
 
