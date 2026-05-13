@@ -77,16 +77,23 @@ const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
   },
 };
 
-const navItems = [
+type NavItem = { id: PageId; label: string; icon: typeof Gauge };
+
+const primaryNavItems = [
   { id: "dashboard", label: "Dashboard", icon: Gauge },
   { id: "bank", label: "Bank", icon: LibraryBig },
   { id: "practice", label: "Practice", icon: BrainCircuit },
   { id: "mock", label: "Mock", icon: Timer },
   { id: "wrong", label: "Wrong", icon: AlertTriangle },
+] satisfies NavItem[];
+
+const secondaryNavItems = [
   { id: "cheatsheet", label: "Cheatsheet", icon: ClipboardList },
   { id: "about", label: "About", icon: Info },
   { id: "versions", label: "Versions", icon: History },
-] satisfies Array<{ id: PageId; label: string; icon: typeof Gauge }>;
+] satisfies NavItem[];
+
+const navItems = [...primaryNavItems, ...secondaryNavItems];
 
 function getPageFromHash(): PageId {
   const hash = window.location.hash.replace("#", "");
@@ -101,10 +108,11 @@ export default function App() {
   const [analytics, setAnalytics] = useState(() => getAnalytics());
   const [theme, setTheme] = useState<ThemePreference>(() => getThemePreference());
   const [importStatus, setImportStatus] = useState("");
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const meta = pageMeta[page];
   const wrongCount = wrongIds.length;
+  const isSecondaryPage = secondaryNavItems.some((item) => item.id === page);
 
   const refreshWrongIds = () => {
     setWrongIds(getWrongQuestionIds());
@@ -122,14 +130,14 @@ export default function App() {
 
     window.location.hash = resolvedPage;
     setPage(resolvedPage);
-    setMobileNavOpen(false);
+    setMenuOpen(false);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   useEffect(() => {
     const handleHashChange = () => {
       setPage(getPageFromHash());
-      setMobileNavOpen(false);
+      setMenuOpen(false);
     };
 
     window.addEventListener("hashchange", handleHashChange);
@@ -246,9 +254,12 @@ export default function App() {
             </button>
 
             <button
-              className="icon-button lg:hidden"
-              onClick={() => setMobileNavOpen((isOpen) => !isOpen)}
-              title="Toggle navigation"
+              aria-expanded={menuOpen}
+              className={`icon-button ${
+                isSecondaryPage ? "border-primary bg-surface-soft" : ""
+              }`}
+              onClick={() => setMenuOpen((isOpen) => !isOpen)}
+              title="Open navigation menu"
               type="button"
             >
               <Menu size={20} aria-hidden="true" />
@@ -259,7 +270,7 @@ export default function App() {
             className="order-2 ml-auto hidden items-center gap-1 rounded-full bg-surface-soft p-1 lg:flex"
             aria-label="Main navigation"
           >
-            {navItems.map((item) => {
+            {primaryNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = item.id === page;
 
@@ -287,36 +298,72 @@ export default function App() {
           </nav>
         </div>
 
-        {mobileNavOpen ? (
-          <nav className="border-t border-hairline-soft bg-canvas px-4 py-3 lg:hidden">
-            <div className="grid gap-2">
-              {navItems.map((item) => {
-                const Icon = item.icon;
-                const isActive = item.id === page;
+        {menuOpen ? (
+          <nav
+            className="border-t border-hairline-soft bg-canvas px-4 py-3 sm:px-6 lg:px-8"
+            aria-label="Collapsed navigation"
+          >
+            <div className="mx-auto grid max-w-[1200px] gap-3 lg:grid-cols-[1fr_auto]">
+              <div className="grid gap-2 lg:hidden">
+                <p className="px-3 text-xs font-semibold uppercase tracking-normal text-muted">
+                  Main
+                </p>
+                {primaryNavItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = item.id === page;
 
-                return (
-                  <button
-                    className={`flex items-center justify-between rounded-md px-3 py-2 text-sm font-semibold transition ${
-                      isActive
-                        ? "bg-action text-on-action"
-                        : "bg-surface-soft text-primary"
-                    }`}
-                    key={item.id}
-                    onClick={() => navigate(item.id)}
-                    type="button"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Icon size={16} aria-hidden="true" />
-                      {item.label}
-                    </span>
-                    {item.id === "wrong" && wrongCount > 0 ? (
-                      <span className="rounded-full bg-rose-100 px-1.5 py-0.5 text-xs font-semibold text-ink-950">
-                        {wrongCount}
+                  return (
+                    <button
+                      className={`flex items-center justify-between rounded-md px-3 py-2 text-sm font-semibold transition ${
+                        isActive
+                          ? "bg-action text-on-action"
+                          : "bg-surface-soft text-primary"
+                      }`}
+                      key={item.id}
+                      onClick={() => navigate(item.id)}
+                      type="button"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Icon size={16} aria-hidden="true" />
+                        {item.label}
                       </span>
-                    ) : null}
-                  </button>
-                );
-              })}
+                      {item.id === "wrong" && wrongCount > 0 ? (
+                        <span className="rounded-full bg-rose-100 px-1.5 py-0.5 text-xs font-semibold text-ink-950">
+                          {wrongCount}
+                        </span>
+                      ) : null}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="grid gap-2 sm:grid-cols-3 lg:col-start-2 lg:min-w-[430px]">
+                <p className="px-3 text-xs font-semibold uppercase tracking-normal text-muted sm:col-span-3">
+                  Reference
+                </p>
+                {secondaryNavItems.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = item.id === page;
+
+                  return (
+                    <button
+                      className={`flex items-center justify-between rounded-md px-3 py-2 text-sm font-semibold transition ${
+                        isActive
+                          ? "bg-action text-on-action"
+                          : "bg-surface-soft text-primary"
+                      }`}
+                      key={item.id}
+                      onClick={() => navigate(item.id)}
+                      type="button"
+                    >
+                      <span className="flex items-center gap-2">
+                        <Icon size={16} aria-hidden="true" />
+                        {item.label}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </nav>
         ) : null}

@@ -1,8 +1,18 @@
-export const APP_VERSION = "1.2.0";
+export const APP_VERSION = "1.2.1";
 
 export const RELEASE_DATE = "2026-05-13";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.1",
+    date: "2026-05-13",
+    title: "Compressed reference navigation",
+    changes: [
+      "Moved Cheatsheet, About, and Versions out of the main top navigation.",
+      "Added a right-side hamburger menu for secondary reference pages.",
+      "Kept mobile navigation available through the same compressed menu.",
+    ],
+  },
   {
     version: "1.2.0",
     date: "2026-05-13",
