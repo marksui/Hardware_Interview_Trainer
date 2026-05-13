@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-primary: 17 17 17;
+  --color-primary-active: 36 36 36;
+  --color-action: 17 17 17;
+  --color-on-action: 255 255 255;
+  --color-canvas: 255 255 255;
+  --color-body: 55 65 81;
+  --color-muted: 107 114 128;
+  --color-muted-soft: 137 137 137;
+  --color-on-primary: 255 255 255;
+  --color-on-dark: 255 255 255;
+  --color-on-dark-soft: 161 161 170;
+  --color-brand-accent: 59 130 246;
+  --color-surface-soft: 248 249 250;
+  --color-surface-card: 245 245 245;
+  --color-surface-strong: 229 231 235;
+  --color-surface-dark: 16 16 16;
+  --color-surface-dark-elevated: 26 26 26;
+  --color-hairline: 229 231 235;
+  --color-hairline-soft: 243 244 246;
+  --color-success: 16 185 129;
+  --color-warning: 245 158 11;
+  --color-error: 239 68 68;
+  color: rgb(var(--color-primary));
+  background: rgb(var(--color-canvas));
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root[data-theme="dark"] {
+  --color-primary: 245 245 245;
+  --color-primary-active: 255 255 255;
+  --color-action: 245 245 245;
+  --color-on-action: 17 17 17;
+  --color-canvas: 12 12 12;
+  --color-body: 212 212 216;
+  --color-muted: 161 161 170;
+  --color-muted-soft: 113 113 122;
+  --color-on-primary: 17 17 17;
+  --color-surface-soft: 24 24 27;
+  --color-surface-card: 24 24 27;
+  --color-surface-strong: 39 39 42;
+  --color-surface-dark: 5 5 5;
+  --color-surface-dark-elevated: 24 24 27;
+  --color-hairline: 39 39 42;
+  --color-hairline-soft: 39 39 42;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid rgba(17, 17, 17, 0.18);
+  outline-offset: 2px;
+}
+
+@layer components {
+  .display-heading {
+    color: rgb(var(--color-primary));
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  .panel {
+    border-radius: 12px;
+    background: rgb(var(--color-surface-card));
+    box-shadow: none;
+  }
+
+  .product-panel {
+    border: 1px solid #e5e7eb;
+    border-color: rgb(var(--color-hairline));
+    border-radius: 12px;
+    background: rgb(var(--color-canvas));
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+
+  .field {
+    width: 100%;
+    border: 1px solid rgb(var(--color-hairline));
+    border-radius: 8px;
+    background: rgb(var(--color-canvas));
+    padding: 10px 14px;
+    color: rgb(var(--color-primary));
+    font-size: 14px;
+    line-height: 1.5;
+    box-shadow: none;
+    transition: border-color 160ms ease;
+  }
+
+  .field:focus {
+    border-color: rgb(var(--color-primary));
+  }
+
+  .icon-button {
+    display: inline-flex;
+    width: 36px;
+    height: 36px;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgb(var(--color-hairline));
+    border-radius: 9999px;
+    background: rgb(var(--color-canvas));
+    color: rgb(var(--color-primary));
+    transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+  }
+
+  .button-primary {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 8px;
+    background: rgb(var(--color-action));
+    padding: 12px 20px;
+    color: rgb(var(--color-on-action));
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    transition: background 160ms ease;
+  }
+
+  .button-primary:active {
+    background: rgb(var(--color-primary-active));
+  }
+
+  .button-primary:disabled {
+    cursor: not-allowed;
+    background: rgb(var(--color-surface-strong));
+    color: rgb(var(--color-muted));
+  }
+
+  .button-secondary {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid rgb(var(--color-hairline));
+    border-radius: 8px;
+    background: rgb(var(--color-canvas));
+    padding: 12px 20px;
+    color: rgb(var(--color-primary));
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    transition: border-color 160ms ease, background 160ms ease;
+  }
+
+  .badge-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 9999px;
+    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.25;
+  }
+
+  :root[data-theme="dark"] .badge-pill.bg-emerald-100,
+  :root[data-theme="dark"] .badge-pill.bg-orange-100,
+  :root[data-theme="dark"] .badge-pill.bg-rose-100,
+  :root[data-theme="dark"] .badge-pill.bg-violet-100,
+  :root[data-theme="dark"] .badge-pill.bg-amber-100 {
+    color: #111111;
+  }
+}

@@ -1,0 +1,421 @@
+import {
+  AlertTriangle,
+  BookOpenCheck,
+  BrainCircuit,
+  ClipboardList,
+  Gauge,
+  Info,
+  LibraryBig,
+  Menu,
+  Moon,
+  Sun,
+  Timer,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { About } from "./pages/About";
+import { Cheatsheet } from "./pages/Cheatsheet";
+import { Dashboard } from "./pages/Dashboard";
+import { MockInterviewMode } from "./pages/MockInterviewMode";
+import { PracticeMode } from "./pages/PracticeMode";
+import { QuestionBank } from "./pages/QuestionBank";
+import { WrongQuestions } from "./pages/WrongQuestions";
+import type { ThemePreference } from "./types";
+import {
+  getAnalytics,
+  getProgressExport,
+  getThemePreference,
+  getWrongQuestionIds,
+  importProgress,
+  setThemePreference,
+} from "./utils/storage";
+import { APP_VERSION, CHANGELOG } from "./utils/version";
+
+type PageId =
+  | "dashboard"
+  | "bank"
+  | "practice"
+  | "mock"
+  | "wrong"
+  | "cheatsheet"
+  | "about";
+
+const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
+  dashboard: {
+    title: "Dashboard",
+    subtitle: "Track question coverage and jump into focused interview prep.",
+  },
+  bank: {
+    title: "Question Bank",
+    subtitle: "Search and filter hardware, SoC, timing, physical design, and EDA prompts.",
+  },
+  practice: {
+    title: "Practice Mode",
+    subtitle: "Choose a topic and difficulty, answer one prompt at a time, and review feedback immediately.",
+  },
+  mock: {
+    title: "Mock Interview Mode",
+    subtitle: "Run a timed 10-question round and identify weak categories.",
+  },
+  wrong: {
+    title: "Wrong Questions",
+    subtitle: "Retry saved misses and remove them when the concept feels solid.",
+  },
+  cheatsheet: {
+    title: "Cheatsheet",
+    subtitle: "Fast refreshers for RTL, DV, CDC, STA, physical design, and EDA algorithms.",
+  },
+  about: {
+    title: "About",
+    subtitle: "Why this local-first trainer exists and how it supports hardware interview preparation.",
+  },
+};
+
+const navItems = [
+  { id: "dashboard", label: "Dashboard", icon: Gauge },
+  { id: "bank", label: "Bank", icon: LibraryBig },
+  { id: "practice", label: "Practice", icon: BrainCircuit },
+  { id: "mock", label: "Mock", icon: Timer },
+  { id: "wrong", label: "Wrong", icon: AlertTriangle },
+  { id: "cheatsheet", label: "Cheatsheet", icon: ClipboardList },
+  { id: "about", label: "About", icon: Info },
+] satisfies Array<{ id: PageId; label: string; icon: typeof Gauge }>;
+
+function getPageFromHash(): PageId {
+  const hash = window.location.hash.replace("#", "");
+  const route = navItems.find((item) => item.id === hash);
+
+  return route?.id ?? "dashboard";
+}
+
+export default function App() {
+  const [page, setPage] = useState<PageId>(() => getPageFromHash());
+  const [wrongIds, setWrongIds] = useState<string[]>(() => getWrongQuestionIds());
+  const [analytics, setAnalytics] = useState(() => getAnalytics());
+  const [theme, setTheme] = useState<ThemePreference>(() => getThemePreference());
+  const [importStatus, setImportStatus] = useState("");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  const meta = pageMeta[page];
+  const wrongCount = wrongIds.length;
+
+  const refreshWrongIds = () => {
+    setWrongIds(getWrongQuestionIds());
+    setAnalytics(getAnalytics());
+  };
+
+  const refreshProgress = () => {
+    setWrongIds(getWrongQuestionIds());
+    setAnalytics(getAnalytics());
+    setTheme(getThemePreference());
+  };
+
+  const navigate = (nextPage: PageId | string) => {
+    const resolvedPage = navItems.find((item) => item.id === nextPage)?.id ?? "dashboard";
+
+    window.location.hash = resolvedPage;
+    setPage(resolvedPage);
+    setMobileNavOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      setPage(getPageFromHash());
+      setMobileNavOpen(false);
+    };
+
+    window.addEventListener("hashchange", handleHashChange);
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    setThemePreference(theme);
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((currentTheme) => (currentTheme === "dark" ? "light" : "dark"));
+  };
+
+  const handleExportProgress = () => {
+    const payload = JSON.stringify(getProgressExport(), null, 2);
+    const blob = new Blob([payload], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = `hardware-interview-trainer-progress-${new Date()
+      .toISOString()
+      .slice(0, 10)}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setImportStatus("Progress exported as JSON.");
+  };
+
+  const handleImportProgress = async (file: File) => {
+    try {
+      importProgress(JSON.parse(await file.text()));
+      refreshProgress();
+      setImportStatus("Progress imported successfully.");
+    } catch (error) {
+      setImportStatus(
+        error instanceof Error ? error.message : "Could not import progress JSON.",
+      );
+    }
+  };
+
+  const content = useMemo(() => {
+    switch (page) {
+      case "bank":
+        return <QuestionBank />;
+      case "practice":
+        return <PracticeMode onWrongChanged={refreshWrongIds} />;
+      case "mock":
+        return <MockInterviewMode onWrongChanged={refreshWrongIds} />;
+      case "wrong":
+        return (
+          <WrongQuestions
+            navigate={navigate}
+            wrongIds={wrongIds}
+            onWrongChanged={refreshWrongIds}
+          />
+        );
+      case "cheatsheet":
+        return <Cheatsheet />;
+      case "about":
+        return <About />;
+      case "dashboard":
+      default:
+        return (
+          <Dashboard
+            analytics={analytics}
+            importStatus={importStatus}
+            navigate={navigate}
+            wrongCount={wrongCount}
+            onExportProgress={handleExportProgress}
+            onImportProgress={handleImportProgress}
+          />
+        );
+    }
+  }, [analytics, importStatus, page, wrongCount, wrongIds]);
+
+  return (
+    <div className="min-h-screen bg-canvas text-primary">
+      <header className="sticky top-0 z-30 border-b border-hairline-soft bg-canvas/95 backdrop-blur">
+        <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+          <button
+            className="flex items-center gap-3 text-left"
+            onClick={() => navigate("dashboard")}
+            type="button"
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-action text-on-action">
+              <BookOpenCheck size={22} aria-hidden="true" />
+            </div>
+            <div>
+              <h1 className="display-heading text-lg">
+                Hardware Interview Trainer
+              </h1>
+              <p className="text-xs font-medium uppercase tracking-normal text-muted">
+                v{APP_VERSION} · RTL · DV · STA · Physical Design
+              </p>
+            </div>
+          </button>
+
+          <div className="order-3 flex items-center gap-2">
+            <button
+              className="icon-button"
+              onClick={toggleTheme}
+              title={theme === "dark" ? "Use light mode" : "Use dark mode"}
+              type="button"
+            >
+              {theme === "dark" ? (
+                <Sun size={18} aria-hidden="true" />
+              ) : (
+                <Moon size={18} aria-hidden="true" />
+              )}
+            </button>
+
+            <button
+              className="icon-button lg:hidden"
+              onClick={() => setMobileNavOpen((isOpen) => !isOpen)}
+              title="Toggle navigation"
+              type="button"
+            >
+              <Menu size={20} aria-hidden="true" />
+            </button>
+          </div>
+
+          <nav
+            className="order-2 ml-auto hidden items-center gap-1 rounded-full bg-surface-soft p-1 lg:flex"
+            aria-label="Main navigation"
+          >
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = item.id === page;
+
+              return (
+                <button
+                  className={`inline-flex min-h-9 items-center gap-2 rounded-full px-3.5 py-2 text-sm font-medium transition ${
+                    isActive
+                      ? "bg-canvas text-primary shadow-panel"
+                      : "text-muted"
+                  }`}
+                  key={item.id}
+                  onClick={() => navigate(item.id)}
+                  type="button"
+                >
+                  <Icon size={16} aria-hidden="true" />
+                  {item.label}
+                  {item.id === "wrong" && wrongCount > 0 ? (
+                    <span className="rounded-full bg-rose-100 px-1.5 py-0.5 text-xs font-semibold text-ink-950">
+                      {wrongCount}
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
+        {mobileNavOpen ? (
+          <nav className="border-t border-hairline-soft bg-canvas px-4 py-3 lg:hidden">
+            <div className="grid gap-2">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = item.id === page;
+
+                return (
+                  <button
+                    className={`flex items-center justify-between rounded-md px-3 py-2 text-sm font-semibold transition ${
+                      isActive
+                        ? "bg-action text-on-action"
+                        : "bg-surface-soft text-primary"
+                    }`}
+                    key={item.id}
+                    onClick={() => navigate(item.id)}
+                    type="button"
+                  >
+                    <span className="flex items-center gap-2">
+                      <Icon size={16} aria-hidden="true" />
+                      {item.label}
+                    </span>
+                    {item.id === "wrong" && wrongCount > 0 ? (
+                      <span className="rounded-full bg-rose-100 px-1.5 py-0.5 text-xs font-semibold text-ink-950">
+                        {wrongCount}
+                      </span>
+                    ) : null}
+                  </button>
+                );
+              })}
+            </div>
+          </nav>
+        ) : null}
+      </header>
+
+      <main className="mx-auto max-w-[1200px] px-4 py-12 sm:px-6 lg:px-8">
+        <div className="mb-10 max-w-4xl">
+          <h2 className="display-heading text-4xl leading-tight sm:text-5xl">
+            {meta.title}
+          </h2>
+          <p className="mt-3 max-w-3xl text-base leading-7 text-body">
+            {meta.subtitle}
+          </p>
+        </div>
+        {content}
+      </main>
+      <footer className="mt-24 bg-surface-dark text-on-dark-soft">
+        <div className="mx-auto max-w-[1200px] px-4 py-16 sm:px-6 lg:px-8">
+          <div className="grid gap-8 md:grid-cols-[1.2fr_0.8fr_0.8fr]">
+            <div>
+              <div className="flex items-center gap-3 text-white">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-ink-950">
+                  <BookOpenCheck size={21} aria-hidden="true" />
+                </div>
+                <span className="display-heading text-xl text-white">
+                  Hardware Interview Trainer
+                </span>
+              </div>
+              <p className="mt-4 max-w-md text-sm leading-6 text-on-dark-soft">
+                A local-first question bank for ECE and computer engineering
+                interview preparation.
+              </p>
+              <span className="mt-4 inline-flex rounded-full bg-surface-dark-elevated px-3 py-1 text-xs font-semibold text-white">
+                Current version v{APP_VERSION}
+              </span>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-white">Practice loops</h3>
+              <div className="mt-4 grid gap-2 text-sm">
+                <button className="text-left text-on-dark-soft" onClick={() => navigate("practice")} type="button">
+                  Practice Mode
+                </button>
+                <button className="text-left text-on-dark-soft" onClick={() => navigate("mock")} type="button">
+                  Mock Interview
+                </button>
+                <button className="text-left text-on-dark-soft" onClick={() => navigate("wrong")} type="button">
+                  Wrong Questions
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-semibold text-white">Reference</h3>
+              <div className="mt-4 grid gap-2 text-sm">
+                <button className="text-left text-on-dark-soft" onClick={() => navigate("bank")} type="button">
+                  Question Bank
+                </button>
+                <button className="text-left text-on-dark-soft" onClick={() => navigate("cheatsheet")} type="button">
+                  Cheatsheet
+                </button>
+                <button className="text-left text-on-dark-soft" onClick={() => navigate("about")} type="button">
+                  About
+                </button>
+                <span className="text-muted-soft">No backend · LocalStorage only</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-12 border-t border-white/10 pt-8">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <h3 className="text-sm font-semibold text-white">Version history</h3>
+                <p className="mt-1 text-sm text-on-dark-soft">
+                  Release notes are kept in the app so reviewers can see what changed.
+                </p>
+              </div>
+              <span className="text-xs font-semibold text-muted-soft">
+                Latest: v{APP_VERSION}
+              </span>
+            </div>
+
+            <div className="mt-6 grid gap-4 lg:grid-cols-2">
+              {CHANGELOG.map((release) => (
+                <article
+                  className="rounded-lg bg-surface-dark-elevated p-4"
+                  key={release.version}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <h4 className="text-sm font-semibold text-white">
+                        v{release.version} · {release.title}
+                      </h4>
+                      <p className="mt-1 text-xs font-medium text-muted-soft">
+                        {release.date}
+                      </p>
+                    </div>
+                  </div>
+                  <ul className="mt-3 space-y-2 text-sm leading-6 text-on-dark-soft">
+                    {release.changes.map((change) => (
+                      <li key={change}>- {change}</li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
