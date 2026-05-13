@@ -1,6 +1,6 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.1`
+**Current app version:** `v1.2.2`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
@@ -302,6 +302,12 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.2 - 2026-05-13
+
+- Improved the mobile header so the app title and version line no longer overflow.
+- Shortened the header topic label from Physical Design to PD on compact screens.
+- Added bold emphasis to important Cheatsheet terms and concepts.
 
 ### v1.2.1 - 2026-05-13
 

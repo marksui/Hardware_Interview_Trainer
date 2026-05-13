@@ -112,6 +112,91 @@ const sections = [
   },
 ];
 
+const highlightTerms = [
+  "nonblocking assignments",
+  "blocking assignments",
+  "verification plan",
+  "Functional coverage",
+  "code coverage",
+  "Constrained-random",
+  "Two-flop synchronizers",
+  "async FIFOs",
+  "Gray-coded FIFO pointers",
+  "Reset deassertion",
+  "Negative slack",
+  "generated clocks",
+  "False paths",
+  "multicycle paths",
+  "PVT corners",
+  "Technology mapping",
+  "gate sizing",
+  "logic restructuring",
+  "formal equivalence",
+  "Global placement",
+  "detailed placement",
+  "High utilization",
+  "Timing-driven placement",
+  "Global routing",
+  "detailed routing",
+  "Upper metals",
+  "Antenna fixes",
+  "Post-route extraction",
+  "Physical signoff",
+  "analytical optimization",
+  "density control",
+  "legalization heuristics",
+  "Steiner-tree approximations",
+  "always_comb",
+  "always_ff",
+  "defaults",
+  "Pipeline",
+  "Monitors",
+  "scoreboards",
+  "Reproducibility",
+  "Metastability",
+  "handshakes",
+  "Setup",
+  "hold",
+  "SDC",
+  "Synthesis",
+  "buffering",
+  "cloning",
+  "retiming",
+  "Placement",
+  "Macros",
+  "Crosstalk",
+  "Floorplanning",
+  "CTS",
+  "IR drop",
+  "Electromigration",
+  "Partitioning",
+  "Routing",
+  "NP-hard",
+].sort((left, right) => right.length - left.length);
+
+const highlightPattern = new RegExp(
+  `(${highlightTerms
+    .map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+    .join("|")})`,
+  "g",
+);
+
+function HighlightedBullet({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(highlightPattern).map((part, index) =>
+        highlightTerms.includes(part) ? (
+          <strong className="font-semibold text-primary" key={`${part}-${index}`}>
+            {part}
+          </strong>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
 export function Cheatsheet() {
   const [activeSectionId, setActiveSectionId] = useState(sections[0].id);
   const activeSection =
@@ -179,7 +264,9 @@ export function Cheatsheet() {
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-canvas text-sm font-semibold text-primary">
                   {index + 1}
                 </span>
-                <p className="text-sm leading-6 text-body">{bullet}</p>
+                <p className="text-sm leading-6 text-body">
+                  <HighlightedBullet text={bullet} />
+                </p>
               </div>
             </div>
           ))}

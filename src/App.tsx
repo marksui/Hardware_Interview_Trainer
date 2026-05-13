@@ -220,21 +220,21 @@ export default function App() {
   return (
     <div className="min-h-screen bg-canvas text-primary">
       <header className="sticky top-0 z-30 border-b border-hairline-soft bg-canvas/95 backdrop-blur">
-        <div className="mx-auto flex h-16 max-w-[1200px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto flex min-h-16 max-w-[1200px] items-center justify-between gap-3 px-4 py-2 sm:gap-4 sm:px-6 lg:px-8">
           <button
-            className="flex items-center gap-3 text-left"
+            className="flex min-w-0 flex-1 items-center gap-3 text-left lg:flex-none"
             onClick={() => navigate("dashboard")}
             type="button"
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-action text-on-action">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-action text-on-action">
               <BookOpenCheck size={22} aria-hidden="true" />
             </div>
-            <div>
-              <h1 className="display-heading text-lg">
+            <div className="min-w-0">
+              <h1 className="display-heading text-[15px] leading-tight sm:text-lg">
                 Hardware Interview Trainer
               </h1>
-              <p className="text-xs font-medium uppercase tracking-normal text-muted">
-                v{APP_VERSION} · RTL · DV · STA · Physical Design
+              <p className="truncate text-[11px] font-medium uppercase leading-5 tracking-normal text-muted sm:text-xs">
+                v{APP_VERSION} · RTL · DV · STA · PD
               </p>
             </div>
           </button>

@@ -1,8 +1,18 @@
-export const APP_VERSION = "1.2.1";
+export const APP_VERSION = "1.2.2";
 
 export const RELEASE_DATE = "2026-05-13";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.2",
+    date: "2026-05-13",
+    title: "Mobile header and cheatsheet emphasis",
+    changes: [
+      "Improved the mobile header so the app title and version line no longer overflow.",
+      "Shortened the header topic label from Physical Design to PD on compact screens.",
+      "Added bold emphasis to important Cheatsheet terms and concepts.",
+    ],
+  },
   {
     version: "1.2.1",
     date: "2026-05-13",
