@@ -1,8 +1,22 @@
-export const APP_VERSION = "1.2.5";
+export const APP_VERSION = "1.2.6";
 
 export const RELEASE_DATE = "2026-05-13";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.6",
+    date: "2026-05-13",
+    title: "Coding type and self-review answers",
+    changes: [
+      "Added a dedicated Coding question type for RTL implementation prompts.",
+      "Split coding practice into separate Verilog Coding and SystemVerilog Coding categories.",
+      "Added 10 Verilog-2001 coding prompts while keeping the existing SystemVerilog coding pack.",
+      "Changed short-answer and coding questions to self-review mode with suggested/reference answers instead of automatic grading.",
+      "Added manual save-to-wrong-questions controls for self-reviewed answers.",
+      "Added custom question selection to Mock Interview Mode.",
+      "Updated the question bank total to 160 questions.",
+    ],
+  },
   {
     version: "1.2.5",
     date: "2026-05-13",

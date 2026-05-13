@@ -1,6 +1,6 @@
 export type Difficulty = "easy" | "medium" | "hard";
 
-export type QuestionType = "single_choice" | "multi_select" | "short_answer";
+export type QuestionType = "single_choice" | "multi_select" | "short_answer" | "coding";
 
 export interface Question {
   id: string;
@@ -17,8 +17,9 @@ export interface Question {
 
 export interface AnswerResult {
   question: Question;
-  isCorrect: boolean;
+  isCorrect: boolean | null;
   givenAnswer: string[];
+  savedForReview?: boolean;
 }
 
 export interface AnalyticsBucket {

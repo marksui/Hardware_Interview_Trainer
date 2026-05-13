@@ -37,7 +37,7 @@ export function WrongQuestions({
     recordAttempt(result);
     onWrongChanged();
 
-    if (result.isCorrect) {
+    if (result.isCorrect === true) {
       setPassedRetryIds((ids) => Array.from(new Set([...ids, result.question.id])));
     }
   };

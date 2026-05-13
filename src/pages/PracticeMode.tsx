@@ -8,9 +8,10 @@ import {
   difficulties,
   filterQuestions,
   formatDifficulty,
+  isSelfReviewedQuestion,
   shuffleQuestions,
 } from "../utils/questions";
-import { addWrongQuestion, recordAttempt } from "../utils/storage";
+import { addWrongQuestion, recordAttempt, recordSelfReviewMiss } from "../utils/storage";
 
 export function PracticeMode({
   onWrongChanged,
@@ -44,10 +45,20 @@ export function PracticeMode({
     setLastResult(result);
     recordAttempt(result);
 
-    if (!result.isCorrect) {
+    if (result.isCorrect === false) {
       addWrongQuestion(result.question.id);
     }
 
+    onWrongChanged();
+  };
+
+  const handleSaveForReview = (result: AnswerResult) => {
+    if (!isSelfReviewedQuestion(result.question)) {
+      return;
+    }
+
+    addWrongQuestion(result.question.id);
+    recordSelfReviewMiss(result);
     onWrongChanged();
   };
 
@@ -171,6 +182,7 @@ export function PracticeMode({
               key={`${practiceRunId}-${activeQuestion.id}`}
               question={activeQuestion}
               onAnswered={handleAnswered}
+              onSaveForReview={handleSaveForReview}
             />
             {lastResult ? (
               <button

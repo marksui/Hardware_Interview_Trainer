@@ -57,7 +57,7 @@ const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
   },
   mock: {
     title: "Mock Interview Mode",
-    subtitle: "Run a timed 10-question round and identify weak categories.",
+    subtitle: "Run a timed random round or select specific questions for a custom mock interview.",
   },
   wrong: {
     title: "Wrong Questions",

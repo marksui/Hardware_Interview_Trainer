@@ -1,7 +1,15 @@
-import { CheckCircle, CheckSquare, Circle, Square, XCircle } from "lucide-react";
+import {
+  BookOpenCheck,
+  CheckCircle,
+  CheckSquare,
+  Circle,
+  Square,
+  TriangleAlert,
+  XCircle,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 import type { AnswerResult, Question } from "../types";
-import { evaluateAnswer } from "../utils/questions";
+import { evaluateAnswer, isSelfReviewedQuestion } from "../utils/questions";
 import { CategoryBadge, DifficultyBadge, TypeBadge } from "./Badge";
 import { RichText } from "./RichText";
 
@@ -12,11 +20,13 @@ function normalizeChoiceState(value: string, selectedChoices: string[]) {
 export function QuestionAttempt({
   question,
   onAnswered,
+  onSaveForReview,
   showFeedback = true,
   submitLabel = "Submit Answer",
 }: {
   question: Question;
   onAnswered?: (result: AnswerResult) => void;
+  onSaveForReview?: (result: AnswerResult) => void;
   showFeedback?: boolean;
   submitLabel?: string;
 }) {
@@ -24,14 +34,16 @@ export function QuestionAttempt({
   const [shortAnswer, setShortAnswer] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [result, setResult] = useState<AnswerResult | null>(null);
+  const [savedForReview, setSavedForReview] = useState(false);
+  const selfReviewed = isSelfReviewedQuestion(question);
 
   const canSubmit = useMemo(() => {
-    if (question.type === "short_answer") {
+    if (selfReviewed) {
       return shortAnswer.trim().length > 0;
     }
 
     return selectedChoices.length > 0;
-  }, [question.type, selectedChoices.length, shortAnswer]);
+  }, [selfReviewed, selectedChoices.length, shortAnswer]);
 
   const toggleChoice = (choice: string) => {
     if (submitted) {
@@ -52,7 +64,7 @@ export function QuestionAttempt({
 
   const handleSubmit = () => {
     const givenAnswer =
-      question.type === "short_answer" ? [shortAnswer] : selectedChoices;
+      selfReviewed ? [shortAnswer] : selectedChoices;
     const isCorrect = evaluateAnswer(question, givenAnswer);
     const nextResult = { question, isCorrect, givenAnswer };
 
@@ -60,6 +72,38 @@ export function QuestionAttempt({
     setResult(nextResult);
     onAnswered?.(nextResult);
   };
+
+  const handleSaveForReview = () => {
+    if (!result || savedForReview) {
+      return;
+    }
+
+    const savedResult = { ...result, savedForReview: true };
+    setResult(savedResult);
+    setSavedForReview(true);
+    onSaveForReview?.(savedResult);
+  };
+
+  const answerTitle =
+    question.type === "coding"
+      ? "Reference checklist"
+      : selfReviewed
+        ? "Suggested answer"
+        : "Correct answer";
+  const explanationTitle =
+    question.type === "coding" ? "Reference implementation" : "Explanation";
+  const effectiveSubmitLabel =
+    selfReviewed && submitLabel === "Submit Answer"
+      ? "Show Suggested Answer"
+      : submitLabel;
+  const textareaLabel =
+    question.type === "coding" ? "Your RTL / code" : "Your answer";
+  const textareaPlaceholder =
+    question.type === "coding"
+      ? question.category === "Verilog Coding"
+        ? "Write Verilog-2001 RTL using reg/wire and always @ blocks."
+        : "Write SystemVerilog RTL using logic, always_ff, or always_comb where appropriate."
+      : "Explain it the way you would in an interview.";
 
   return (
     <article className="product-panel overflow-hidden">
@@ -78,21 +122,17 @@ export function QuestionAttempt({
       </div>
 
       <div className="space-y-4 px-6 py-6">
-        {question.type === "short_answer" ? (
+        {selfReviewed ? (
           <label className="block">
             <span className="mb-2 block text-sm font-semibold text-primary">
-              Your answer
+              {textareaLabel}
             </span>
             <textarea
               className="field min-h-28 resize-y"
               disabled={submitted}
               value={shortAnswer}
               onChange={(event) => setShortAnswer(event.target.value)}
-              placeholder={
-                question.tags.includes("rtl-coding")
-                  ? "Write the RTL code or describe the key lines you would write."
-                  : "Explain it the way you would in an interview."
-              }
+              placeholder={textareaPlaceholder}
             />
           </label>
         ) : (
@@ -139,38 +179,56 @@ export function QuestionAttempt({
             onClick={handleSubmit}
             type="button"
           >
-            {submitLabel}
+            {effectiveSubmitLabel}
           </button>
         ) : null}
 
         {submitted && result && !showFeedback ? (
           <div className="rounded-md border border-hairline bg-surface-soft px-4 py-3 text-sm font-semibold text-body">
-            Response recorded.
+            {selfReviewed
+              ? "Response recorded. Review the suggested answer at the end."
+              : "Response recorded."}
           </div>
         ) : null}
 
         {submitted && result && showFeedback ? (
           <div
             className={`space-y-4 rounded-lg border px-4 py-4 ${
-              result.isCorrect
+              result.isCorrect === null
+                ? "border-hairline bg-surface-soft"
+                : result.isCorrect
                 ? "border-emerald-100 bg-emerald-50"
                 : "border-rose-100 bg-rose-50"
             }`}
           >
             <div className="flex items-center gap-2 text-sm font-semibold">
-              {result.isCorrect ? (
+              {result.isCorrect === null ? (
+                <BookOpenCheck className="text-primary" size={18} />
+              ) : result.isCorrect ? (
                 <CheckCircle className="text-emerald-700" size={18} />
               ) : (
                 <XCircle className="text-rose-700" size={18} />
               )}
-              <span className={result.isCorrect ? "text-ink-950" : "text-rose-700"}>
-                {result.isCorrect ? "Correct" : "Review this one"}
+              <span
+                className={
+                  result.isCorrect === null
+                    ? "text-primary"
+                    : result.isCorrect
+                      ? "text-ink-950"
+                      : "text-rose-700"
+                }
+              >
+                {result.isCorrect === null
+                  ? "Self review"
+                  : result.isCorrect
+                    ? "Correct"
+                    : "Review this one"}
               </span>
             </div>
             <div className="grid gap-4 lg:grid-cols-2">
               <div>
                 <h3 className="text-sm font-semibold text-ink-950">
-                  Correct answer
+                  {answerTitle}
                 </h3>
                 <RichText
                   text={question.answer.join("; ")}
@@ -188,12 +246,25 @@ export function QuestionAttempt({
               </div>
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-ink-950">Explanation</h3>
+              <h3 className="text-sm font-semibold text-ink-950">
+                {explanationTitle}
+              </h3>
               <RichText
                 text={question.explanation}
                 textClassName="text-sm leading-6 text-ink-700"
               />
             </div>
+            {result.isCorrect === null && onSaveForReview ? (
+              <button
+                className="button-secondary w-fit border-rose-100 bg-rose-50 text-ink-950"
+                disabled={savedForReview}
+                onClick={handleSaveForReview}
+                type="button"
+              >
+                <TriangleAlert size={16} aria-hidden="true" />
+                {savedForReview ? "Saved to Wrong Questions" : "Save to Wrong Questions"}
+              </button>
+            ) : null}
           </div>
         ) : null}
       </div>

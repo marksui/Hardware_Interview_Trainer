@@ -9,6 +9,7 @@ import {
   difficulties,
   filterQuestions,
   formatQuestionType,
+  isSelfReviewedQuestion,
   questionTypes,
 } from "../utils/questions";
 
@@ -95,7 +96,13 @@ function QuestionDetails({
           </div>
         ) : null}
         <div>
-          <h3 className="text-sm font-semibold text-muted">Correct answer</h3>
+          <h3 className="text-sm font-semibold text-muted">
+            {question.type === "coding"
+              ? "Reference checklist"
+              : isSelfReviewedQuestion(question)
+                ? "Suggested answer"
+                : "Correct answer"}
+          </h3>
           <div className="mt-2">
             <RichText
               text={question.answer.join("; ")}

@@ -150,11 +150,27 @@ export function recordAttempt(result: AnswerResult) {
     analytics.totalCorrect += 1;
     categoryBucket.correct += 1;
     difficultyBucket.correct += 1;
-  } else {
+  } else if (result.isCorrect === false) {
     analytics.totalMissed += 1;
     categoryBucket.missed += 1;
     difficultyBucket.missed += 1;
   }
+
+  analytics.byCategory[result.question.category] = categoryBucket;
+  analytics.byDifficulty[result.question.difficulty] = difficultyBucket;
+  writeAnalytics(analytics);
+}
+
+export function recordSelfReviewMiss(result: AnswerResult) {
+  const analytics = getAnalytics();
+  const categoryBucket =
+    analytics.byCategory[result.question.category] ?? emptyBucket();
+  const difficultyBucket =
+    analytics.byDifficulty[result.question.difficulty] ?? emptyBucket();
+
+  analytics.totalMissed += 1;
+  categoryBucket.missed += 1;
+  difficultyBucket.missed += 1;
 
   analytics.byCategory[result.question.category] = categoryBucket;
   analytics.byDifficulty[result.question.difficulty] = difficultyBucket;

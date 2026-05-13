@@ -1,10 +1,10 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.5`
+**Current app version:** `v1.2.6`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
-The app combines a 150-question interview bank, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
+The app combines a 160-question interview bank, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
 
 Related project: [Logic & CMOS Studio](https://marksui.github.io/logic-cmos-studio/) is a companion educational EDA mini-tool for Boolean logic, Karnaugh maps, Verilog export, and static CMOS network visualization.
 
@@ -40,12 +40,14 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
 - **Practice Mode**
   - Category and difficulty selection
   - One question at a time
-  - Single-choice, multi-select, and short-answer support
+  - Single-choice, multi-select, short-answer, and coding support
   - Immediate feedback after submission
-  - Wrong answers saved to LocalStorage
+  - Self-review suggested answers for open-ended and coding prompts
+  - Wrong answers or manually saved review items stored in LocalStorage
 
 - **Mock Interview Mode**
   - Random 10-question round
+  - Custom selected-question rounds
   - Timer
   - Score summary
   - Weak-category report
@@ -150,6 +152,7 @@ Supported question types:
 - `single_choice`
 - `multi_select`
 - `short_answer`
+- `coding`
 
 Local progress export format:
 
@@ -157,7 +160,7 @@ Local progress export format:
 {
   "app": "Hardware Interview Trainer",
   "version": 1,
-  "appVersion": "1.2.5",
+  "appVersion": "1.2.6",
   "exportedAt": "2026-05-13T00:00:00.000Z",
   "wrongQuestions": ["rtl-001", "sta-004"],
   "analytics": {
@@ -325,6 +328,16 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.6 - 2026-05-13
+
+- Added a dedicated `coding` question type for RTL implementation prompts.
+- Split coding practice into separate Verilog Coding and SystemVerilog Coding categories.
+- Added 10 Verilog-2001 coding prompts while keeping the existing SystemVerilog coding pack.
+- Changed short-answer and coding questions to self-review mode with suggested/reference answers instead of automatic grading.
+- Added manual save-to-wrong-questions controls for self-reviewed answers.
+- Added custom question selection to Mock Interview Mode.
+- Updated the question bank total to 160 questions.
 
 ### v1.2.5 - 2026-05-13
 

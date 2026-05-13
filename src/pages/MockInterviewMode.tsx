@@ -1,12 +1,30 @@
-import { AlarmClock, ArrowRight, CheckCircle, RotateCcw, Trophy } from "lucide-react";
+import {
+  AlarmClock,
+  ArrowRight,
+  CheckCircle,
+  RotateCcw,
+  Search,
+  SlidersHorizontal,
+  Trophy,
+  TriangleAlert,
+} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { CategoryBadge } from "../components/Badge";
-import { EmptyState } from "../components/EmptyState";
+import { CategoryBadge, DifficultyBadge, TypeBadge } from "../components/Badge";
 import { ProgressBar } from "../components/ProgressBar";
 import { QuestionAttempt } from "../components/QuestionAttempt";
+import { RichText } from "../components/RichText";
 import type { AnswerResult, Question } from "../types";
-import { questions, shuffleQuestions } from "../utils/questions";
-import { addWrongQuestion, recordAttempt } from "../utils/storage";
+import {
+  categories,
+  difficulties,
+  filterQuestions,
+  formatQuestionType,
+  isSelfReviewedQuestion,
+  questionTypes,
+  questions,
+  shuffleQuestions,
+} from "../utils/questions";
+import { addWrongQuestion, recordAttempt, recordSelfReviewMiss } from "../utils/storage";
 
 const MOCK_QUESTION_COUNT = 10;
 const MOCK_DURATION_SECONDS = 15 * 60;
@@ -23,7 +41,9 @@ function summarizeWeakCategories(
   answers: Record<string, AnswerResult>,
 ) {
   const weakCounts = mockQuestions.reduce<Record<string, number>>((counts, question) => {
-    if (!answers[question.id]?.isCorrect) {
+    const answer = answers[question.id];
+
+    if (!answer || answer.isCorrect === false) {
       counts[question.category] = (counts[question.category] ?? 0) + 1;
     }
 
@@ -47,18 +67,51 @@ export function MockInterviewMode({
   const [timeRemaining, setTimeRemaining] = useState(MOCK_DURATION_SECONDS);
   const [isActive, setIsActive] = useState(false);
   const [isFinished, setIsFinished] = useState(false);
+  const [setupSearch, setSetupSearch] = useState("");
+  const [setupCategory, setSetupCategory] = useState("");
+  const [setupDifficulty, setSetupDifficulty] = useState("");
+  const [setupType, setSetupType] = useState("");
+  const [selectedQuestionIds, setSelectedQuestionIds] = useState<string[]>([]);
+  const [savedReviewIds, setSavedReviewIds] = useState<string[]>([]);
 
   const activeQuestion = mockQuestions[currentIndex];
   const currentAnswer = activeQuestion ? answers[activeQuestion.id] : undefined;
-  const correctCount = Object.values(answers).filter((answer) => answer.isCorrect).length;
+  const correctCount = Object.values(answers).filter(
+    (answer) => answer.isCorrect === true,
+  ).length;
+  const scorableQuestions = mockQuestions.filter(
+    (question) => !isSelfReviewedQuestion(question),
+  );
+  const selfReviewedCount = Object.values(answers).filter(
+    (answer) => answer.isCorrect === null,
+  ).length;
   const weakCategories = useMemo(
     () => summarizeWeakCategories(mockQuestions, answers),
     [answers, mockQuestions],
   );
+  const setupQuestions = useMemo(
+    () =>
+      filterQuestions({
+        category: setupCategory,
+        difficulty: setupDifficulty,
+        type: setupType,
+        search: setupSearch,
+      }),
+    [setupCategory, setupDifficulty, setupSearch, setupType],
+  );
+  const selectedQuestions = useMemo(
+    () =>
+      selectedQuestionIds
+        .map((id) => questions.find((question) => question.id === id))
+        .filter((question): question is Question => Boolean(question)),
+    [selectedQuestionIds],
+  );
 
   const finishMock = (answerState = answers) => {
     mockQuestions.forEach((question) => {
-      if (!answerState[question.id]?.isCorrect) {
+      const answer = answerState[question.id];
+
+      if (!answer || answer.isCorrect === false) {
         addWrongQuestion(question.id);
       }
     });
@@ -85,13 +138,19 @@ export function MockInterviewMode({
     }
   }, [isActive, isFinished, timeRemaining, answers, mockQuestions]);
 
-  const startMock = () => {
-    setMockQuestions(shuffleQuestions(questions).slice(0, MOCK_QUESTION_COUNT));
+  const startMock = (questionSet?: Question[]) => {
+    const nextQuestions =
+      questionSet && questionSet.length
+        ? questionSet
+        : shuffleQuestions(questions).slice(0, MOCK_QUESTION_COUNT);
+
+    setMockQuestions(nextQuestions);
     setAnswers({});
     setCurrentIndex(0);
     setTimeRemaining(MOCK_DURATION_SECONDS);
     setIsActive(true);
     setIsFinished(false);
+    setSavedReviewIds([]);
     setSessionId((id) => id + 1);
   };
 
@@ -101,10 +160,29 @@ export function MockInterviewMode({
     setAnswers(nextAnswers);
     recordAttempt(result);
 
-    if (!result.isCorrect) {
+    if (result.isCorrect === false) {
       addWrongQuestion(result.question.id);
     }
 
+    onWrongChanged();
+  };
+
+  const toggleQuestionSelection = (id: string) => {
+    setSelectedQuestionIds((currentIds) =>
+      currentIds.includes(id)
+        ? currentIds.filter((currentId) => currentId !== id)
+        : [...currentIds, id],
+    );
+  };
+
+  const handleSaveSelfReview = (result: AnswerResult) => {
+    if (result.isCorrect !== null || savedReviewIds.includes(result.question.id)) {
+      return;
+    }
+
+    addWrongQuestion(result.question.id);
+    recordSelfReviewMiss(result);
+    setSavedReviewIds((ids) => [...ids, result.question.id]);
     onWrongChanged();
   };
 
@@ -130,18 +208,23 @@ export function MockInterviewMode({
                 Mock interview complete
               </h2>
               <p className="mt-2 text-sm leading-6 text-body">
-                Score: {correctCount} / {mockQuestions.length} correct.
+                Score: {correctCount} / {scorableQuestions.length} scored questions
+                correct. {selfReviewedCount} self-reviewed.
               </p>
             </div>
             <div className="w-full max-w-sm">
               <ProgressBar
-                label={`${Math.round((correctCount / mockQuestions.length) * 100)}% score`}
+                label={
+                  scorableQuestions.length
+                    ? `${Math.round((correctCount / scorableQuestions.length) * 100)}% scored`
+                    : "Self-reviewed round"
+                }
                 value={correctCount}
-                max={mockQuestions.length}
+                max={scorableQuestions.length || mockQuestions.length}
               />
               <button
                 className="button-primary mt-5 w-full"
-                onClick={startMock}
+                onClick={() => startMock()}
                 type="button"
               >
                 <RotateCcw size={17} aria-hidden="true" />
@@ -159,10 +242,7 @@ export function MockInterviewMode({
             <div className="mt-4 space-y-3">
               {weakCategories.length ? (
                 weakCategories.map((item) => (
-                  <div
-                    className="product-panel p-3"
-                    key={item.category}
-                  >
+                  <div className="product-panel p-3" key={item.category}>
                     <div className="flex items-center justify-between gap-3">
                       <span className="text-sm font-semibold text-primary">
                         {item.category}
@@ -184,6 +264,8 @@ export function MockInterviewMode({
           <div className="space-y-3">
             {mockQuestions.map((question, index) => {
               const result = answers[question.id];
+              const isSelfReview = result?.isCorrect === null;
+              const isCorrect = result?.isCorrect === true;
 
               return (
                 <div className="product-panel p-4" key={question.id}>
@@ -191,14 +273,18 @@ export function MockInterviewMode({
                     <div>
                       <div className="flex flex-wrap gap-2">
                         <CategoryBadge category={question.category} />
+                        <DifficultyBadge difficulty={question.difficulty} />
+                        <TypeBadge type={question.type} />
                         <span
                           className={`rounded-md px-2 py-1 text-xs font-semibold ${
-                            result?.isCorrect
-                              ? "bg-emerald-100 text-ink-950"
-                              : "bg-rose-100 text-ink-950"
+                            isSelfReview
+                              ? "bg-surface-card text-primary"
+                              : isCorrect
+                                ? "bg-emerald-100 text-ink-950"
+                                : "bg-rose-100 text-ink-950"
                           }`}
                         >
-                          {result?.isCorrect ? "Correct" : "Missed"}
+                          {isSelfReview ? "Self review" : isCorrect ? "Correct" : "Missed"}
                         </span>
                       </div>
                       <p className="mt-3 text-sm font-semibold leading-6 text-primary">
@@ -207,15 +293,30 @@ export function MockInterviewMode({
                     </div>
                   </div>
                   <div className="mt-3 grid gap-3 lg:grid-cols-2">
-                    <p className="text-sm leading-6 text-body">
-                      <span className="font-semibold text-primary">Answer:</span>{" "}
-                      {question.answer.join("; ")}
-                    </p>
-                    <p className="text-sm leading-6 text-body">
-                      <span className="font-semibold text-primary">Oral:</span>{" "}
-                      {question.interview_answer}
-                    </p>
+                    <div className="text-sm leading-6 text-body">
+                      <span className="font-semibold text-primary">
+                        {isSelfReviewedQuestion(question) ? "Suggested:" : "Answer:"}
+                      </span>
+                      <RichText text={question.answer.join("; ")} />
+                    </div>
+                    <div className="text-sm leading-6 text-body">
+                      <span className="font-semibold text-primary">Oral:</span>
+                      <RichText text={question.interview_answer} />
+                    </div>
                   </div>
+                  {isSelfReview ? (
+                    <button
+                      className="button-secondary mt-3 border-rose-100 bg-rose-50 px-3 py-2 text-ink-950"
+                      disabled={savedReviewIds.includes(question.id)}
+                      onClick={() => handleSaveSelfReview(result)}
+                      type="button"
+                    >
+                      <TriangleAlert size={16} aria-hidden="true" />
+                      {savedReviewIds.includes(question.id)
+                        ? "Saved to Wrong Questions"
+                        : "Save to Wrong Questions"}
+                    </button>
+                  ) : null}
                 </div>
               );
             })}
@@ -227,21 +328,147 @@ export function MockInterviewMode({
 
   if (!isActive) {
     return (
-      <EmptyState
-        icon={AlarmClock}
-        title="Timed mock interview"
-        description="Start a 10-question round with a 15-minute timer. You will see your score and weak categories at the end."
-        action={
-          <button
-            className="button-primary"
-            onClick={startMock}
-            type="button"
-          >
-            <CheckCircle size={17} aria-hidden="true" />
-            Start Mock Interview
-          </button>
-        }
-      />
+      <div className="grid gap-6 lg:grid-cols-[340px_1fr]">
+        <aside className="panel h-fit p-6">
+          <div className="flex h-11 w-11 items-center justify-center rounded-full bg-canvas text-primary">
+            <AlarmClock size={22} aria-hidden="true" />
+          </div>
+          <h2 className="display-heading mt-4 text-[28px] leading-tight">
+            Mock setup
+          </h2>
+          <p className="mt-2 text-sm leading-6 text-body">
+            Start a random 10-question round, or build a custom mock by selecting
+            specific prompts from the bank.
+          </p>
+
+          <div className="mt-5 grid gap-3">
+            <button className="button-primary" onClick={() => startMock()} type="button">
+              <CheckCircle size={17} aria-hidden="true" />
+              Random 10 Questions
+            </button>
+            <button
+              className="button-secondary"
+              disabled={selectedQuestions.length === 0}
+              onClick={() => startMock(selectedQuestions)}
+              type="button"
+            >
+              <SlidersHorizontal size={17} aria-hidden="true" />
+              Start Selected ({selectedQuestions.length})
+            </button>
+          </div>
+        </aside>
+
+        <section className="panel p-6">
+          <div className="grid gap-4 lg:grid-cols-[1fr_160px_160px_160px]">
+            <label className="block">
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-normal text-muted">
+                Search
+              </span>
+              <div className="relative">
+                <Search
+                  className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted"
+                  size={18}
+                  aria-hidden="true"
+                />
+                <input
+                  className="field pl-10"
+                  value={setupSearch}
+                  onChange={(event) => setSetupSearch(event.target.value)}
+                  placeholder="CDC, Verilog, STA, fifo..."
+                />
+              </div>
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-normal text-muted">
+                Category
+              </span>
+              <select
+                className="field"
+                value={setupCategory}
+                onChange={(event) => setSetupCategory(event.target.value)}
+              >
+                <option value="">All</option>
+                {categories.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-normal text-muted">
+                Difficulty
+              </span>
+              <select
+                className="field"
+                value={setupDifficulty}
+                onChange={(event) => setSetupDifficulty(event.target.value)}
+              >
+                <option value="">All</option>
+                {difficulties.map((difficulty) => (
+                  <option key={difficulty} value={difficulty}>
+                    {difficulty}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="mb-2 block text-xs font-semibold uppercase tracking-normal text-muted">
+                Type
+              </span>
+              <select
+                className="field"
+                value={setupType}
+                onChange={(event) => setSetupType(event.target.value)}
+              >
+                <option value="">All</option>
+                {questionTypes.map((type) => (
+                  <option key={type} value={type}>
+                    {formatQuestionType(type)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          </div>
+
+          <div className="mt-5 max-h-[520px] divide-y divide-hairline overflow-y-auto rounded-lg border border-hairline">
+            {setupQuestions.map((question) => {
+              const isSelected = selectedQuestionIds.includes(question.id);
+
+              return (
+                <button
+                  className={`block w-full px-4 py-4 text-left transition ${
+                    isSelected ? "bg-surface-soft" : "bg-canvas"
+                  }`}
+                  key={question.id}
+                  onClick={() => toggleQuestionSelection(question.id)}
+                  type="button"
+                >
+                  <div className="flex flex-wrap gap-2">
+                    <CategoryBadge category={question.category} />
+                    <DifficultyBadge difficulty={question.difficulty} />
+                    <TypeBadge type={question.type} />
+                    {isSelected ? (
+                      <span className="badge-pill bg-action text-on-action">
+                        Selected
+                      </span>
+                    ) : null}
+                  </div>
+                  <p className="mt-2 text-sm font-semibold leading-6 text-primary">
+                    {question.question}
+                  </p>
+                  <p className="mt-1 font-code text-xs font-semibold text-muted">
+                    {question.id}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      </div>
     );
   }
 
@@ -277,11 +504,7 @@ export function MockInterviewMode({
 
       <div className="flex flex-wrap gap-3">
         {currentAnswer ? (
-          <button
-            className="button-primary"
-            onClick={advance}
-            type="button"
-          >
+          <button className="button-primary" onClick={advance} type="button">
             {currentIndex === mockQuestions.length - 1 ? "Finish Mock" : "Next"}
             <ArrowRight size={17} aria-hidden="true" />
           </button>

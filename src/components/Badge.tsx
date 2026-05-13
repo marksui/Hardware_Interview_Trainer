@@ -11,6 +11,7 @@ const typeStyles: Record<QuestionType, string> = {
   single_choice: "bg-surface-card text-primary",
   multi_select: "bg-violet-100 text-ink-950",
   short_answer: "bg-amber-100 text-ink-950",
+  coding: "bg-sky-100 text-ink-950",
 };
 
 export function DifficultyBadge({ difficulty }: { difficulty: Difficulty }) {

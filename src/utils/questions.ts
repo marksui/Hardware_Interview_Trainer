@@ -9,6 +9,7 @@ export const questionTypes: QuestionType[] = [
   "single_choice",
   "multi_select",
   "short_answer",
+  "coding",
 ];
 
 export const categories = Array.from(
@@ -29,10 +30,14 @@ export function shuffleQuestions<T>(items: T[]) {
 }
 
 export function formatQuestionType(type: QuestionType) {
-  return type
-    .split("_")
-    .map((word) => word[0].toUpperCase() + word.slice(1))
-    .join(" ");
+  const labels: Record<QuestionType, string> = {
+    single_choice: "Single Choice",
+    multi_select: "Multi Select",
+    short_answer: "Suggested Answer",
+    coding: "Coding",
+  };
+
+  return labels[type];
 }
 
 export function formatDifficulty(difficulty: Difficulty) {
@@ -51,39 +56,13 @@ function normalizedSet(values: string[]) {
   return values.map(normalize).sort();
 }
 
-function tokenSet(value: string) {
-  return new Set(normalize(value).split(" ").filter((token) => token.length > 2));
-}
-
-function evaluateShortAnswer(question: Question, givenAnswer: string[]) {
-  const response = normalize(givenAnswer.join(" "));
-
-  if (!response) {
-    return false;
-  }
-
-  return question.answer.some((expected) => {
-    const normalizedExpected = normalize(expected);
-
-    if (
-      response.includes(normalizedExpected) ||
-      normalizedExpected.includes(response)
-    ) {
-      return true;
-    }
-
-    const expectedTokens = tokenSet(expected);
-    const responseTokens = tokenSet(response);
-    const matches = [...expectedTokens].filter((token) => responseTokens.has(token));
-    const neededMatches = Math.max(1, Math.ceil(expectedTokens.size * 0.6));
-
-    return matches.length >= neededMatches;
-  });
+export function isSelfReviewedQuestion(question: Question) {
+  return question.type === "short_answer" || question.type === "coding";
 }
 
 export function evaluateAnswer(question: Question, givenAnswer: string[]) {
-  if (question.type === "short_answer") {
-    return evaluateShortAnswer(question, givenAnswer);
+  if (isSelfReviewedQuestion(question)) {
+    return givenAnswer.some((answer) => answer.trim().length > 0) ? null : false;
   }
 
   const expected = normalizedSet(question.answer);
