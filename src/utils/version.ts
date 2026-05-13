@@ -1,8 +1,19 @@
-export const APP_VERSION = "1.2.4";
+export const APP_VERSION = "1.2.5";
 
 export const RELEASE_DATE = "2026-05-13";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.5",
+    date: "2026-05-13",
+    title: "GitHub Pages root deployment fix",
+    changes: [
+      "Fixed the blank GitHub Pages site when repository settings publish the main branch root.",
+      "Split the local Vite development entry into dev.html while keeping index.html as a static Pages-ready entry.",
+      "Added stable production asset names so the root Pages entry can load the built React app reliably.",
+      "Added a build helper that syncs generated assets to the repository root for branch-based Pages publishing.",
+    ],
+  },
   {
     version: "1.2.4",
     date: "2026-05-13",

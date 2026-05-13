@@ -1,11 +1,12 @@
 {
   "name": "hardware-interview-trainer",
   "private": true,
-  "version": "1.2.4",
+  "version": "1.2.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && vite build && node scripts/prepare-pages.mjs",
+    "build:pages-root": "npm run build && node scripts/sync-root-pages.mjs",
     "preview": "vite preview",
     "deploy": "npm run build && gh-pages -d dist"
   },

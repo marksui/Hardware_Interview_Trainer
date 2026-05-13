@@ -1,6 +1,6 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.4`
+**Current app version:** `v1.2.5`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
@@ -157,7 +157,7 @@ Local progress export format:
 {
   "app": "Hardware Interview Trainer",
   "version": 1,
-  "appVersion": "1.1.0",
+  "appVersion": "1.2.5",
   "exportedAt": "2026-05-13T00:00:00.000Z",
   "wrongQuestions": ["rtl-001", "sta-004"],
   "analytics": {
@@ -176,7 +176,14 @@ Local progress export format:
 ```text
 .
 ├── .github/workflows/deploy.yml
+├── assets
+│   ├── index.css
+│   └── index.js
+├── dev.html
 ├── public/.nojekyll
+├── scripts
+│   ├── prepare-pages.mjs
+│   └── sync-root-pages.mjs
 ├── src
 │   ├── components
 │   │   ├── Badge.tsx
@@ -251,6 +258,12 @@ Build for production:
 npm run build
 ```
 
+Build and sync root-level static assets for branch-based GitHub Pages:
+
+```bash
+npm run build:pages-root
+```
+
 Preview the production build:
 
 ```bash
@@ -259,7 +272,7 @@ npm run preview
 
 ## Deployment
 
-The app is ready for GitHub Pages.
+The app is ready for GitHub Pages. It supports both GitHub Actions deployment and the simpler branch-source setup.
 
 This repository includes [`deploy.yml`](.github/workflows/deploy.yml), which builds and deploys the app when changes are pushed to `main`.
 
@@ -270,6 +283,14 @@ To enable GitHub Pages:
 3. Go to **Pages**.
 4. Set **Source** to **GitHub Actions**.
 5. Push to `main` or run the workflow manually.
+
+If the repository is configured as **Deploy from a branch** with `main` and `/root`, run this before committing:
+
+```bash
+npm run build:pages-root
+```
+
+That command keeps the root [`index.html`](index.html) and root [`assets`](assets) folder aligned with the Vite build, so GitHub Pages does not try to serve the development-only TypeScript entry.
 
 The Vite config uses:
 
@@ -304,6 +325,13 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.5 - 2026-05-13
+
+- Fixed the blank GitHub Pages site when repository settings publish the main branch root.
+- Split the local Vite development entry into `dev.html` while keeping `index.html` as a static Pages-ready entry.
+- Added stable production asset names so the root Pages entry can load the built React app reliably.
+- Added a build helper that syncs generated assets to the repository root for branch-based Pages publishing.
 
 ### v1.2.4 - 2026-05-13
 
