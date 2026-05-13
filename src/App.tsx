@@ -4,6 +4,7 @@ import {
   BrainCircuit,
   ClipboardList,
   Gauge,
+  History,
   Info,
   LibraryBig,
   Menu,
@@ -18,6 +19,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { MockInterviewMode } from "./pages/MockInterviewMode";
 import { PracticeMode } from "./pages/PracticeMode";
 import { QuestionBank } from "./pages/QuestionBank";
+import { VersionHistory } from "./pages/VersionHistory";
 import { WrongQuestions } from "./pages/WrongQuestions";
 import type { ThemePreference } from "./types";
 import {
@@ -28,7 +30,7 @@ import {
   importProgress,
   setThemePreference,
 } from "./utils/storage";
-import { APP_VERSION, CHANGELOG } from "./utils/version";
+import { APP_VERSION } from "./utils/version";
 
 type PageId =
   | "dashboard"
@@ -37,7 +39,8 @@ type PageId =
   | "mock"
   | "wrong"
   | "cheatsheet"
-  | "about";
+  | "about"
+  | "versions";
 
 const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
   dashboard: {
@@ -68,6 +71,10 @@ const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
     title: "About",
     subtitle: "Why this local-first trainer exists and how it supports hardware interview preparation.",
   },
+  versions: {
+    title: "Version History",
+    subtitle: "Release notes for visible product, documentation, and deployment updates.",
+  },
 };
 
 const navItems = [
@@ -78,6 +85,7 @@ const navItems = [
   { id: "wrong", label: "Wrong", icon: AlertTriangle },
   { id: "cheatsheet", label: "Cheatsheet", icon: ClipboardList },
   { id: "about", label: "About", icon: Info },
+  { id: "versions", label: "Versions", icon: History },
 ] satisfies Array<{ id: PageId; label: string; icon: typeof Gauge }>;
 
 function getPageFromHash(): PageId {
@@ -184,6 +192,8 @@ export default function App() {
         return <Cheatsheet />;
       case "about":
         return <About />;
+      case "versions":
+        return <VersionHistory />;
       case "dashboard":
       default:
         return (
@@ -339,9 +349,13 @@ export default function App() {
                 A local-first question bank for ECE and computer engineering
                 interview preparation.
               </p>
-              <span className="mt-4 inline-flex rounded-full bg-surface-dark-elevated px-3 py-1 text-xs font-semibold text-white">
+              <button
+                className="mt-4 inline-flex rounded-full bg-surface-dark-elevated px-3 py-1 text-xs font-semibold text-white"
+                onClick={() => navigate("versions")}
+                type="button"
+              >
                 Current version v{APP_VERSION}
-              </span>
+              </button>
             </div>
 
             <div>
@@ -371,47 +385,24 @@ export default function App() {
                 <button className="text-left text-on-dark-soft" onClick={() => navigate("about")} type="button">
                   About
                 </button>
+                <button className="text-left text-on-dark-soft" onClick={() => navigate("versions")} type="button">
+                  Version History
+                </button>
                 <span className="text-muted-soft">No backend · LocalStorage only</span>
               </div>
             </div>
           </div>
 
           <div className="mt-12 border-t border-white/10 pt-8">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <h3 className="text-sm font-semibold text-white">Version history</h3>
-                <p className="mt-1 text-sm text-on-dark-soft">
-                  Release notes are kept in the app so reviewers can see what changed.
-                </p>
-              </div>
-              <span className="text-xs font-semibold text-muted-soft">
-                Latest: v{APP_VERSION}
-              </span>
-            </div>
-
-            <div className="mt-6 grid gap-4 lg:grid-cols-2">
-              {CHANGELOG.map((release) => (
-                <article
-                  className="rounded-lg bg-surface-dark-elevated p-4"
-                  key={release.version}
-                >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <h4 className="text-sm font-semibold text-white">
-                        v{release.version} · {release.title}
-                      </h4>
-                      <p className="mt-1 text-xs font-medium text-muted-soft">
-                        {release.date}
-                      </p>
-                    </div>
-                  </div>
-                  <ul className="mt-3 space-y-2 text-sm leading-6 text-on-dark-soft">
-                    {release.changes.map((change) => (
-                      <li key={change}>- {change}</li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
+            <div className="flex flex-col gap-3 text-sm text-muted-soft sm:flex-row sm:items-center sm:justify-between">
+              <span>Built with React, Vite, TypeScript, Tailwind CSS, and LocalStorage.</span>
+              <button
+                className="text-left font-semibold text-white"
+                onClick={() => navigate("versions")}
+                type="button"
+              >
+                View version history
+              </button>
             </div>
           </div>
         </div>

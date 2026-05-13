@@ -1,8 +1,18 @@
-export const APP_VERSION = "1.1.0";
+export const APP_VERSION = "1.1.1";
 
 export const RELEASE_DATE = "2026-05-13";
 
 export const CHANGELOG = [
+  {
+    version: "1.1.1",
+    date: "2026-05-13",
+    title: "Dedicated version history page",
+    changes: [
+      "Moved release notes out of the footer into a standalone Version History page.",
+      "Added a navigation route and footer link for version history.",
+      "Kept the footer compact with only the current version and a release-notes entry point.",
+    ],
+  },
   {
     version: "1.1.0",
     date: "2026-05-13",
