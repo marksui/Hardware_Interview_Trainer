@@ -1,4 +1,4 @@
-import { Binary, Database, Gauge, Layers3 } from "lucide-react";
+import { Binary, Database, ExternalLink, Gauge, Layers3 } from "lucide-react";
 
 const prepChallenges = [
   {
@@ -119,6 +119,63 @@ export function About() {
             </div>
           );
         })}
+      </section>
+
+      <section className="product-panel p-6">
+        <div className="grid gap-6 lg:grid-cols-[320px_1fr]">
+          <div>
+            <div className="flex h-11 w-11 items-center justify-center rounded-full bg-surface-card text-primary">
+              <Binary size={22} aria-hidden="true" />
+            </div>
+            <h2 className="display-heading mt-4 text-[28px] leading-tight">
+              Related portfolio project
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-body">
+              Pair interview practice with a hands-on educational EDA mini-tool
+              for Boolean logic and static CMOS design.
+            </p>
+          </div>
+
+          <div className="rounded-lg border border-hairline bg-surface-soft p-5">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <span className="badge-pill bg-surface-card text-primary">
+                  EDA companion
+                </span>
+                <h3 className="display-heading mt-4 text-[24px] leading-tight">
+                  Logic & CMOS Studio
+                </h3>
+                <p className="mt-3 text-sm leading-6 text-body">
+                  A browser-based teaching tool that turns Boolean logic into
+                  truth tables, Karnaugh maps, simplified equations, Verilog,
+                  and static CMOS pull-up / pull-down schematics.
+                </p>
+              </div>
+              <a
+                className="button-secondary shrink-0"
+                href="https://marksui.github.io/logic-cmos-studio/"
+                rel="noreferrer"
+                target="_blank"
+              >
+                <ExternalLink size={17} aria-hidden="true" />
+                Open Studio
+              </a>
+            </div>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {[
+                "Truth tables",
+                "K-maps",
+                "Verilog export",
+                "CMOS networks",
+                "EDA education",
+              ].map((item) => (
+                <span className="badge-pill bg-surface-card text-primary" key={item}>
+                  {item}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
       </section>
 
       <section className="product-panel p-6">

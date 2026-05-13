@@ -435,6 +435,14 @@ export default function App() {
                 <button className="text-left text-on-dark-soft" onClick={() => navigate("versions")} type="button">
                   Version History
                 </button>
+                <a
+                  className="text-left text-on-dark-soft"
+                  href="https://marksui.github.io/logic-cmos-studio/"
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  Logic & CMOS Studio
+                </a>
                 <span className="text-muted-soft">No backend · LocalStorage only</span>
               </div>
             </div>

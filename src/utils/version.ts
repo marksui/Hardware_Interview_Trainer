@@ -1,8 +1,18 @@
-export const APP_VERSION = "1.2.2";
+export const APP_VERSION = "1.2.3";
 
 export const RELEASE_DATE = "2026-05-13";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.3",
+    date: "2026-05-13",
+    title: "Portfolio project cross-link",
+    changes: [
+      "Added Logic & CMOS Studio as a related portfolio project on the About page.",
+      "Added a footer link to the companion Boolean logic and CMOS educational mini-tool.",
+      "Positioned Hardware Interview Trainer as part of a broader hardware / EDA portfolio.",
+    ],
+  },
   {
     version: "1.2.2",
     date: "2026-05-13",
