@@ -3,6 +3,7 @@ import {
   BookOpenCheck,
   BrainCircuit,
   ClipboardList,
+  Code2,
   Gauge,
   History,
   Info,
@@ -15,6 +16,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 import { About } from "./pages/About";
 import { Cheatsheet } from "./pages/Cheatsheet";
+import { CodeQuestions } from "./pages/CodeQuestions";
 import { Dashboard } from "./pages/Dashboard";
 import { MockInterviewMode } from "./pages/MockInterviewMode";
 import { PracticeMode } from "./pages/PracticeMode";
@@ -35,6 +37,7 @@ import { APP_VERSION } from "./utils/version";
 type PageId =
   | "dashboard"
   | "bank"
+  | "code"
   | "practice"
   | "mock"
   | "wrong"
@@ -50,6 +53,10 @@ const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
   bank: {
     title: "Question Bank",
     subtitle: "Search and filter hardware, SoC, timing, physical design, and EDA prompts.",
+  },
+  code: {
+    title: "Code Questions",
+    subtitle: "View every RTL coding prompt with a LeetCode-style problem and reference implementation layout.",
   },
   practice: {
     title: "Practice Mode",
@@ -82,6 +89,7 @@ type NavItem = { id: PageId; label: string; icon: typeof Gauge };
 const primaryNavItems = [
   { id: "dashboard", label: "Dashboard", icon: Gauge },
   { id: "bank", label: "Bank", icon: LibraryBig },
+  { id: "code", label: "Code", icon: Code2 },
   { id: "practice", label: "Practice", icon: BrainCircuit },
   { id: "mock", label: "Mock", icon: Timer },
   { id: "wrong", label: "Wrong", icon: AlertTriangle },
@@ -184,6 +192,8 @@ export default function App() {
     switch (page) {
       case "bank":
         return <QuestionBank />;
+      case "code":
+        return <CodeQuestions />;
       case "practice":
         return <PracticeMode onWrongChanged={refreshWrongIds} />;
       case "mock":
@@ -410,6 +420,9 @@ export default function App() {
               <div className="mt-4 grid gap-2 text-sm">
                 <button className="text-left text-on-dark-soft" onClick={() => navigate("practice")} type="button">
                   Practice Mode
+                </button>
+                <button className="text-left text-on-dark-soft" onClick={() => navigate("code")} type="button">
+                  Code Questions
                 </button>
                 <button className="text-left text-on-dark-soft" onClick={() => navigate("mock")} type="button">
                   Mock Interview

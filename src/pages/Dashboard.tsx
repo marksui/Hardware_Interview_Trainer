@@ -3,6 +3,7 @@ import {
   BarChart3,
   BookOpenCheck,
   BrainCircuit,
+  Code2,
   Download,
   FileJson,
   Layers3,
@@ -149,8 +150,8 @@ export function Dashboard({
                 Start training
               </h2>
               <p className="mt-2 text-sm leading-6 text-body">
-                Practice for targeted repetition, then switch to timed mock
-                rounds when you want interview pressure.
+                Practice for targeted repetition, inspect coding prompts, then
+                switch to timed mock rounds when you want interview pressure.
               </p>
             </div>
 
@@ -184,6 +185,14 @@ export function Dashboard({
               >
                 <Play size={17} aria-hidden="true" />
                 Practice Mode
+              </button>
+              <button
+                className="button-secondary"
+                onClick={() => navigate("code")}
+                type="button"
+              >
+                <Code2 size={17} aria-hidden="true" />
+                Code Questions
               </button>
               <button
                 className="button-secondary"

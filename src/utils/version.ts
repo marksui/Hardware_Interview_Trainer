@@ -1,8 +1,18 @@
-export const APP_VERSION = "1.2.6";
+export const APP_VERSION = "1.2.7";
 
 export const RELEASE_DATE = "2026-05-13";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.7",
+    date: "2026-05-13",
+    title: "Dedicated code question view",
+    changes: [
+      "Added a standalone Code Questions page for all coding prompts.",
+      "Added a LeetCode-style split view with prompt, checklist, interview notes, and reference implementation visible together.",
+      "Added Code Questions entry points in the main navigation, dashboard, and footer.",
+    ],
+  },
   {
     version: "1.2.6",
     date: "2026-05-13",

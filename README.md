@@ -1,10 +1,10 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.6`
+**Current app version:** `v1.2.7`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
-The app combines a 160-question interview bank, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
+The app combines a 160-question interview bank, a dedicated code-question view, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
 
 Related project: [Logic & CMOS Studio](https://marksui.github.io/logic-cmos-studio/) is a companion educational EDA mini-tool for Boolean logic, Karnaugh maps, Verilog export, and static CMOS network visualization.
 
@@ -36,6 +36,11 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
   - Searchable and filterable table
   - Filters for category, difficulty, and question type
   - Full question details with answer, explanation, oral answer, and tags
+
+- **Code Questions**
+  - Standalone page for every RTL coding prompt
+  - Search and filters for coding category and difficulty
+  - LeetCode-style split view with prompt, checklist, interview notes, and reference implementation
 
 - **Practice Mode**
   - Category and difficulty selection
@@ -160,7 +165,7 @@ Local progress export format:
 {
   "app": "Hardware Interview Trainer",
   "version": 1,
-  "appVersion": "1.2.6",
+  "appVersion": "1.2.7",
   "exportedAt": "2026-05-13T00:00:00.000Z",
   "wrongQuestions": ["rtl-001", "sta-004"],
   "analytics": {
@@ -226,6 +231,7 @@ Add generated screenshots here when publishing the project:
 |---|---|
 | Dashboard | `docs/screenshots/dashboard.png` |
 | Question Bank | `docs/screenshots/question-bank.png` |
+| Code Questions | `docs/screenshots/code-questions.png` |
 | Practice Mode | `docs/screenshots/practice-mode.png` |
 | Mock Interview Mode | `docs/screenshots/mock-interview-mode.png` |
 | Wrong Questions | `docs/screenshots/wrong-questions.png` |
@@ -328,6 +334,12 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.7 - 2026-05-13
+
+- Added a standalone Code Questions page for all coding prompts.
+- Added a LeetCode-style split view with prompt, checklist, interview notes, and reference implementation visible together.
+- Added Code Questions entry points in the main navigation, dashboard, and footer.
 
 ### v1.2.6 - 2026-05-13
 
