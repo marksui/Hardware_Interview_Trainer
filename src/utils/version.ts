@@ -1,8 +1,21 @@
-export const APP_VERSION = "1.2.3";
+export const APP_VERSION = "1.2.4";
 
 export const RELEASE_DATE = "2026-05-13";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.4",
+    date: "2026-05-13",
+    title: "RTL coding question pack",
+    changes: [
+      "Added a new RTL Coding category with 20 hands-on coding prompts.",
+      "Covered basics such as async reset flops, sync reset flops, muxes, edge detectors, counters, shift registers, and decoders.",
+      "Added advanced prompts for skid buffers, valid-ready half-buffers, reset synchronizers, CDC pulse toggles, Gray-code FIFO helpers, arbiters, register files, and pipeline bubbles.",
+      "Added rich text rendering so explanations and reference answers can show formatted RTL code blocks.",
+      "Improved question-bank search so multiple keywords can be combined.",
+      "Updated the question bank total to 150 questions.",
+    ],
+  },
   {
     version: "1.2.3",
     date: "2026-05-13",

@@ -2,6 +2,7 @@ import { Search, SlidersHorizontal, X } from "lucide-react";
 import type { ReactNode } from "react";
 import { useMemo, useState } from "react";
 import { CategoryBadge, DifficultyBadge, TypeBadge } from "../components/Badge";
+import { RichText } from "../components/RichText";
 import type { Question } from "../types";
 import {
   categories,
@@ -71,7 +72,12 @@ function QuestionDetails({
         </div>
         <div>
           <h3 className="text-sm font-semibold text-muted">Prompt</h3>
-          <p className="mt-2 text-sm leading-6 text-primary">{question.question}</p>
+          <div className="mt-2">
+            <RichText
+              text={question.question}
+              textClassName="text-sm leading-6 text-primary"
+            />
+          </div>
         </div>
         {question.choices?.length ? (
           <div>
@@ -90,21 +96,24 @@ function QuestionDetails({
         ) : null}
         <div>
           <h3 className="text-sm font-semibold text-muted">Correct answer</h3>
-          <p className="mt-2 text-sm leading-6 text-primary">
-            {question.answer.join("; ")}
-          </p>
+          <div className="mt-2">
+            <RichText
+              text={question.answer.join("; ")}
+              textClassName="text-sm leading-6 text-primary"
+            />
+          </div>
         </div>
         <div>
           <h3 className="text-sm font-semibold text-muted">Explanation</h3>
-          <p className="mt-2 text-sm leading-6 text-body">
-            {question.explanation}
-          </p>
+          <div className="mt-2">
+            <RichText text={question.explanation} />
+          </div>
         </div>
         <div>
           <h3 className="text-sm font-semibold text-muted">Oral answer</h3>
-          <p className="mt-2 text-sm leading-6 text-body">
-            {question.interview_answer}
-          </p>
+          <div className="mt-2">
+            <RichText text={question.interview_answer} />
+          </div>
         </div>
         <div>
           <h3 className="text-sm font-semibold text-muted">Tags</h3>

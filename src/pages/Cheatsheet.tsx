@@ -190,7 +190,7 @@ function HighlightedBullet({ text }: { text: string }) {
             {part}
           </strong>
         ) : (
-          part
+          <span key={`${part}-${index}`}>{part}</span>
         ),
       )}
     </>

@@ -1,10 +1,10 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.3`
+**Current app version:** `v1.2.4`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
-The app combines a 130-question interview bank, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
+The app combines a 150-question interview bank, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
 
 Related project: [Logic & CMOS Studio](https://marksui.github.io/logic-cmos-studio/) is a companion educational EDA mini-tool for Boolean logic, Karnaugh maps, Verilog export, and static CMOS network visualization.
 
@@ -304,6 +304,15 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.4 - 2026-05-13
+
+- Added a new RTL Coding category with 20 hands-on coding prompts.
+- Covered basics such as async reset flops, sync reset flops, muxes, edge detectors, counters, shift registers, and decoders.
+- Added advanced prompts for skid buffers, valid-ready half-buffers, reset synchronizers, CDC pulse toggles, Gray-code FIFO helpers, arbiters, register files, and pipeline bubbles.
+- Added rich text rendering so explanations and reference answers can show formatted RTL code blocks.
+- Improved question-bank search so multiple keywords can be combined.
+- Updated the question bank total to 150 questions.
 
 ### v1.2.3 - 2026-05-13
 

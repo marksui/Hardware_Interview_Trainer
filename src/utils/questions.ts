@@ -102,6 +102,7 @@ export function filterQuestions(options: {
   search?: string;
 }) {
   const search = normalize(options.search ?? "");
+  const searchTokens = search.split(" ").filter(Boolean);
 
   return questions.filter((question) => {
     const matchesCategory =
@@ -125,7 +126,8 @@ export function filterQuestions(options: {
       matchesCategory &&
       matchesDifficulty &&
       matchesType &&
-      (!search || searchable.includes(search))
+      (!searchTokens.length ||
+        searchTokens.every((token) => searchable.includes(token)))
     );
   });
 }

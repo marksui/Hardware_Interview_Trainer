@@ -3,6 +3,7 @@ import { useMemo, useState } from "react";
 import type { AnswerResult, Question } from "../types";
 import { evaluateAnswer } from "../utils/questions";
 import { CategoryBadge, DifficultyBadge, TypeBadge } from "./Badge";
+import { RichText } from "./RichText";
 
 function normalizeChoiceState(value: string, selectedChoices: string[]) {
   return selectedChoices.includes(value);
@@ -68,9 +69,12 @@ export function QuestionAttempt({
           <DifficultyBadge difficulty={question.difficulty} />
           <TypeBadge type={question.type} />
         </div>
-        <h2 className="display-heading mt-4 text-[28px] leading-tight">
-          {question.question}
-        </h2>
+        <div className="mt-4">
+          <RichText
+            text={question.question}
+            textClassName="display-heading text-[28px] leading-tight"
+          />
+        </div>
       </div>
 
       <div className="space-y-4 px-6 py-6">
@@ -84,7 +88,11 @@ export function QuestionAttempt({
               disabled={submitted}
               value={shortAnswer}
               onChange={(event) => setShortAnswer(event.target.value)}
-              placeholder="Explain it the way you would in an interview."
+              placeholder={
+                question.tags.includes("rtl-coding")
+                  ? "Write the RTL code or describe the key lines you would write."
+                  : "Explain it the way you would in an interview."
+              }
             />
           </label>
         ) : (
@@ -164,24 +172,27 @@ export function QuestionAttempt({
                 <h3 className="text-sm font-semibold text-ink-950">
                   Correct answer
                 </h3>
-                <p className="mt-1 text-sm leading-6 text-ink-700">
-                  {question.answer.join("; ")}
-                </p>
+                <RichText
+                  text={question.answer.join("; ")}
+                  textClassName="text-sm leading-6 text-ink-700"
+                />
               </div>
               <div>
                 <h3 className="text-sm font-semibold text-ink-950">
                   Oral answer
                 </h3>
-                <p className="mt-1 text-sm leading-6 text-ink-700">
-                  {question.interview_answer}
-                </p>
+                <RichText
+                  text={question.interview_answer}
+                  textClassName="text-sm leading-6 text-ink-700"
+                />
               </div>
             </div>
             <div>
               <h3 className="text-sm font-semibold text-ink-950">Explanation</h3>
-              <p className="mt-1 text-sm leading-6 text-ink-700">
-                {question.explanation}
-              </p>
+              <RichText
+                text={question.explanation}
+                textClassName="text-sm leading-6 text-ink-700"
+              />
             </div>
           </div>
         ) : null}
