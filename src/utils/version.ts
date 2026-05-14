@@ -1,8 +1,19 @@
-export const APP_VERSION = "1.2.8";
+export const APP_VERSION = "1.2.9";
 
 export const RELEASE_DATE = "2026-05-14";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.9",
+    date: "2026-05-14",
+    title: "NVIDIA RTL coding question pack",
+    changes: [
+      "Added 18 NVIDIA-oriented Verilog coding prompts covering edge detection, enabled flops, synchronizers, counters, valid-ready monitors, latency tracking, FIFOs, FSMs, adder trees, MACs, shift registers, priority encoders, round-robin arbitration, and async FIFO structure.",
+      "Included full reference implementations and interview-style explanations, with bilingual notes where useful.",
+      "Updated the NVIDIA ASIC Hardware Design Engineer mock preset to use the new targeted coding pack.",
+      "Updated the question bank total to 178 questions.",
+    ],
+  },
   {
     version: "1.2.8",
     date: "2026-05-14",

@@ -1,10 +1,10 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.8`
+**Current app version:** `v1.2.9`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
-The app combines a 160-question interview bank, a dedicated code-question view, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
+The app combines a 178-question interview bank, a dedicated code-question view, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
 
 Related project: [Logic & CMOS Studio](https://marksui.github.io/logic-cmos-studio/) is a companion educational EDA mini-tool for Boolean logic, Karnaugh maps, Verilog export, and static CMOS network visualization.
 
@@ -54,6 +54,7 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
   - Random 10-question round
   - Custom selected-question rounds
   - NVIDIA ASIC Hardware Design Engineer preset for JR20011787
+  - NVIDIA-oriented RTL coding pack for performance monitors, CDC, FIFOs, arbiters, and datapaths
   - Flashcard quick-review switch for answer-first study
   - Timer
   - Score summary
@@ -336,6 +337,13 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.9 - 2026-05-14
+
+- Added 18 NVIDIA-oriented Verilog coding prompts covering edge detection, enabled flops, synchronizers, counters, valid-ready monitors, latency tracking, FIFOs, FSMs, adder trees, MACs, shift registers, priority encoders, round-robin arbitration, and async FIFO structure.
+- Included full reference implementations and interview-style explanations, with bilingual notes where useful.
+- Updated the NVIDIA ASIC Hardware Design Engineer mock preset to use the new targeted coding pack.
+- Updated the question bank total to 178 questions.
 
 ### v1.2.8 - 2026-05-14
 
