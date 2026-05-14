@@ -1,0 +1,17 @@
+{
+  "name": "Hardware Interview Trainer",
+  "short_name": "HW Trainer",
+  "description": "A local-first interview question bank for RTL, DV, STA, physical design, and EDA preparation.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111111",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "64x64",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
