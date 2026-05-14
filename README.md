@@ -1,6 +1,6 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.7`
+**Current app version:** `v1.2.8`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
@@ -53,6 +53,8 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
 - **Mock Interview Mode**
   - Random 10-question round
   - Custom selected-question rounds
+  - NVIDIA ASIC Hardware Design Engineer preset for JR20011787
+  - Flashcard quick-review switch for answer-first study
   - Timer
   - Score summary
   - Weak-category report
@@ -334,6 +336,13 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.8 - 2026-05-14
+
+- Added a NVIDIA ASIC Hardware Design Engineer mock preset for JR20011787 based on the provided interview tips.
+- Curated the preset around Verilog writing, scripting mindset, problem solving, SoC methodology, CDC, clocks, reset, and latency.
+- Added a flashcard quick-review switch in Mock Interview Mode that shows answers immediately and advances card by card without scoring.
+- Added a practice-only reminder for company-specific interview preparation.
 
 ### v1.2.7 - 2026-05-13
 

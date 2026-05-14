@@ -1,6 +1,8 @@
 import {
   AlarmClock,
   ArrowRight,
+  BookOpenCheck,
+  Briefcase,
   CheckCircle,
   RotateCcw,
   Search,
@@ -13,6 +15,7 @@ import { CategoryBadge, DifficultyBadge, TypeBadge } from "../components/Badge";
 import { ProgressBar } from "../components/ProgressBar";
 import { QuestionAttempt } from "../components/QuestionAttempt";
 import { RichText } from "../components/RichText";
+import { mockPresets, type MockPreset } from "../data/mockPresets";
 import type { AnswerResult, Question } from "../types";
 import {
   categories,
@@ -55,6 +58,23 @@ function summarizeWeakCategories(
     .map(([category, count]) => ({ category, count }));
 }
 
+function summarizeCategoryCoverage(mockQuestions: Question[]) {
+  const counts = mockQuestions.reduce<Record<string, number>>((items, question) => {
+    items[question.category] = (items[question.category] ?? 0) + 1;
+    return items;
+  }, {});
+
+  return Object.entries(counts)
+    .sort(([, leftCount], [, rightCount]) => rightCount - leftCount)
+    .map(([category, count]) => ({ category, count }));
+}
+
+function resolvePresetQuestions(preset: MockPreset) {
+  return preset.questionIds
+    .map((id) => questions.find((question) => question.id === id))
+    .filter((question): question is Question => Boolean(question));
+}
+
 export function MockInterviewMode({
   onWrongChanged,
 }: {
@@ -73,6 +93,8 @@ export function MockInterviewMode({
   const [setupType, setSetupType] = useState("");
   const [selectedQuestionIds, setSelectedQuestionIds] = useState<string[]>([]);
   const [savedReviewIds, setSavedReviewIds] = useState<string[]>([]);
+  const [isFlashcardMode, setIsFlashcardMode] = useState(false);
+  const [activePresetName, setActivePresetName] = useState("");
 
   const activeQuestion = mockQuestions[currentIndex];
   const currentAnswer = activeQuestion ? answers[activeQuestion.id] : undefined;
@@ -88,6 +110,10 @@ export function MockInterviewMode({
   const weakCategories = useMemo(
     () => summarizeWeakCategories(mockQuestions, answers),
     [answers, mockQuestions],
+  );
+  const categoryCoverage = useMemo(
+    () => summarizeCategoryCoverage(mockQuestions),
+    [mockQuestions],
   );
   const setupQuestions = useMemo(
     () =>
@@ -108,20 +134,22 @@ export function MockInterviewMode({
   );
 
   const finishMock = (answerState = answers) => {
-    mockQuestions.forEach((question) => {
-      const answer = answerState[question.id];
+    if (!isFlashcardMode) {
+      mockQuestions.forEach((question) => {
+        const answer = answerState[question.id];
 
-      if (!answer || answer.isCorrect === false) {
-        addWrongQuestion(question.id);
-      }
-    });
+        if (!answer || answer.isCorrect === false) {
+          addWrongQuestion(question.id);
+        }
+      });
+    }
     onWrongChanged();
     setIsActive(false);
     setIsFinished(true);
   };
 
   useEffect(() => {
-    if (!isActive || isFinished) {
+    if (!isActive || isFinished || isFlashcardMode) {
       return;
     }
 
@@ -130,19 +158,23 @@ export function MockInterviewMode({
     }, 1000);
 
     return () => window.clearInterval(intervalId);
-  }, [isActive, isFinished]);
+  }, [isActive, isFinished, isFlashcardMode]);
 
   useEffect(() => {
-    if (isActive && !isFinished && timeRemaining === 0) {
+    if (isActive && !isFinished && !isFlashcardMode && timeRemaining === 0) {
       finishMock();
     }
-  }, [isActive, isFinished, timeRemaining, answers, mockQuestions]);
+  }, [isActive, isFinished, isFlashcardMode, timeRemaining, answers, mockQuestions]);
 
-  const startMock = (questionSet?: Question[]) => {
+  const startMock = (
+    questionSet?: Question[],
+    options?: { flashcard?: boolean; presetName?: string },
+  ) => {
     const nextQuestions =
       questionSet && questionSet.length
         ? questionSet
         : shuffleQuestions(questions).slice(0, MOCK_QUESTION_COUNT);
+    const flashcard = options?.flashcard ?? isFlashcardMode;
 
     setMockQuestions(nextQuestions);
     setAnswers({});
@@ -150,6 +182,8 @@ export function MockInterviewMode({
     setTimeRemaining(MOCK_DURATION_SECONDS);
     setIsActive(true);
     setIsFinished(false);
+    setIsFlashcardMode(flashcard);
+    setActivePresetName(options?.presetName ?? "");
     setSavedReviewIds([]);
     setSessionId((id) => id + 1);
   };
@@ -195,7 +229,16 @@ export function MockInterviewMode({
     setCurrentIndex((index) => index + 1);
   };
 
+  const startPreset = (preset: MockPreset) => {
+    startMock(resolvePresetQuestions(preset), {
+      flashcard: isFlashcardMode,
+      presetName: `${preset.company} ${preset.requisition}`,
+    });
+  };
+
   if (isFinished) {
+    const summaryItems = isFlashcardMode ? categoryCoverage : weakCategories;
+
     return (
       <div className="space-y-5">
         <section className="panel p-6">
@@ -205,22 +248,31 @@ export function MockInterviewMode({
                 <Trophy size={24} aria-hidden="true" />
               </div>
               <h2 className="display-heading mt-4 text-4xl leading-tight">
-                Mock interview complete
+                {isFlashcardMode ? "Flashcard review complete" : "Mock interview complete"}
               </h2>
               <p className="mt-2 text-sm leading-6 text-body">
-                Score: {correctCount} / {scorableQuestions.length} scored questions
-                correct. {selfReviewedCount} self-reviewed.
+                {isFlashcardMode
+                  ? `Reviewed ${mockQuestions.length} questions${
+                      activePresetName ? ` for ${activePresetName}` : ""
+                    }.`
+                  : `Score: ${correctCount} / ${scorableQuestions.length} scored questions correct. ${selfReviewedCount} self-reviewed.`}
               </p>
             </div>
             <div className="w-full max-w-sm">
               <ProgressBar
                 label={
-                  scorableQuestions.length
+                  isFlashcardMode
+                    ? "Review complete"
+                    : scorableQuestions.length
                     ? `${Math.round((correctCount / scorableQuestions.length) * 100)}% scored`
                     : "Self-reviewed round"
                 }
-                value={correctCount}
-                max={scorableQuestions.length || mockQuestions.length}
+                value={isFlashcardMode ? mockQuestions.length : correctCount}
+                max={
+                  isFlashcardMode
+                    ? mockQuestions.length
+                    : scorableQuestions.length || mockQuestions.length
+                }
               />
               <button
                 className="button-primary mt-5 w-full"
@@ -228,7 +280,7 @@ export function MockInterviewMode({
                 type="button"
               >
                 <RotateCcw size={17} aria-hidden="true" />
-                Start New Mock
+                {isFlashcardMode ? "Start New Review" : "Start New Mock"}
               </button>
             </div>
           </div>
@@ -237,17 +289,21 @@ export function MockInterviewMode({
         <section className="grid gap-5 lg:grid-cols-[320px_1fr]">
           <div className="panel h-fit p-6">
             <h3 className="display-heading text-[28px] leading-tight">
-              Weak categories
+              {isFlashcardMode ? "Review coverage" : "Weak categories"}
             </h3>
             <div className="mt-4 space-y-3">
-              {weakCategories.length ? (
-                weakCategories.map((item) => (
+              {summaryItems.length ? (
+                summaryItems.map((item) => (
                   <div className="product-panel p-3" key={item.category}>
                     <div className="flex items-center justify-between gap-3">
                       <span className="text-sm font-semibold text-primary">
                         {item.category}
                       </span>
-                      <span className="text-sm font-semibold text-error">
+                      <span
+                        className={`text-sm font-semibold ${
+                          isFlashcardMode ? "text-muted" : "text-error"
+                        }`}
+                      >
                         {item.count}
                       </span>
                     </div>
@@ -279,12 +335,20 @@ export function MockInterviewMode({
                           className={`rounded-md px-2 py-1 text-xs font-semibold ${
                             isSelfReview
                               ? "bg-surface-card text-primary"
+                              : isFlashcardMode
+                                ? "bg-surface-card text-primary"
                               : isCorrect
                                 ? "bg-emerald-100 text-ink-950"
                                 : "bg-rose-100 text-ink-950"
                           }`}
                         >
-                          {isSelfReview ? "Self review" : isCorrect ? "Correct" : "Missed"}
+                          {isFlashcardMode
+                            ? "Reviewed"
+                            : isSelfReview
+                              ? "Self review"
+                              : isCorrect
+                                ? "Correct"
+                                : "Missed"}
                         </span>
                       </div>
                       <p className="mt-3 text-sm font-semibold leading-6 text-primary">
@@ -304,7 +368,7 @@ export function MockInterviewMode({
                       <RichText text={question.interview_answer} />
                     </div>
                   </div>
-                  {isSelfReview ? (
+                  {isSelfReview && !isFlashcardMode ? (
                     <button
                       className="button-secondary mt-3 border-rose-100 bg-rose-50 px-3 py-2 text-ink-950"
                       disabled={savedReviewIds.includes(question.id)}
@@ -341,19 +405,80 @@ export function MockInterviewMode({
             specific prompts from the bank.
           </p>
 
+          <button
+            aria-pressed={isFlashcardMode}
+            className={`mt-5 flex w-full items-center justify-between rounded-lg border px-3 py-3 text-left transition ${
+              isFlashcardMode
+                ? "border-primary bg-canvas text-primary"
+                : "border-hairline bg-surface-soft text-body"
+            }`}
+            onClick={() => setIsFlashcardMode((enabled) => !enabled)}
+            type="button"
+          >
+            <span>
+              <span className="block text-sm font-semibold">Flashcard quick review</span>
+              <span className="mt-1 block text-xs leading-5 text-muted">
+                Show answers immediately, then move to the next card. No scoring.
+              </span>
+            </span>
+            <span className="badge-pill bg-surface-card text-primary">
+              {isFlashcardMode ? "On" : "Off"}
+            </span>
+          </button>
+
+          <div className="mt-5 rounded-lg border border-hairline bg-canvas p-4">
+            <div className="flex items-start gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface-soft text-primary">
+                <Briefcase size={18} aria-hidden="true" />
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-normal text-muted">
+                  Company preset
+                </p>
+                <h3 className="mt-1 text-sm font-semibold text-primary">
+                  {mockPresets[0].name}
+                </h3>
+                <p className="mt-1 font-code text-xs font-semibold text-muted">
+                  {mockPresets[0].requisition}
+                </p>
+              </div>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-body">
+              {mockPresets[0].description}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {mockPresets[0].focus.map((item) => (
+                <span className="badge-pill bg-surface-card text-primary" key={item}>
+                  {item}
+                </span>
+              ))}
+            </div>
+            <p className="mt-3 text-xs leading-5 text-muted">
+              Practice-only. Do not use this tool during a live interview.
+            </p>
+            <button
+              className="button-primary mt-4 w-full"
+              onClick={() => startPreset(mockPresets[0])}
+              type="button"
+            >
+              <BookOpenCheck size={17} aria-hidden="true" />
+              Start NVIDIA Mock ({mockPresets[0].questionIds.length})
+            </button>
+          </div>
+
           <div className="mt-5 grid gap-3">
             <button className="button-primary" onClick={() => startMock()} type="button">
               <CheckCircle size={17} aria-hidden="true" />
-              Random 10 Questions
+              {isFlashcardMode ? "Random Flashcards" : "Random 10 Questions"}
             </button>
             <button
               className="button-secondary"
               disabled={selectedQuestions.length === 0}
-              onClick={() => startMock(selectedQuestions)}
+              onClick={() => startMock(selectedQuestions, { flashcard: isFlashcardMode })}
               type="button"
             >
               <SlidersHorizontal size={17} aria-hidden="true" />
-              Start Selected ({selectedQuestions.length})
+              {isFlashcardMode ? "Review Selected" : "Start Selected"} ({selectedQuestions.length})
             </button>
           </div>
         </aside>
@@ -483,29 +608,85 @@ export function MockInterviewMode({
           />
           <div className="rounded-md border border-hairline bg-surface-soft px-3 py-2 text-center">
             <span className="text-xs font-semibold uppercase tracking-normal text-muted">
-              Timer
+              {isFlashcardMode ? "Mode" : "Timer"}
             </span>
             <p className="display-heading text-xl">
-              {formatTimer(timeRemaining)}
+              {isFlashcardMode ? "Flashcard" : formatTimer(timeRemaining)}
             </p>
           </div>
         </div>
       </section>
 
       {activeQuestion ? (
-        <QuestionAttempt
-          key={`${sessionId}-${activeQuestion.id}`}
-          question={activeQuestion}
-          onAnswered={handleAnswered}
-          showFeedback={false}
-          submitLabel="Lock Response"
-        />
+        isFlashcardMode ? (
+          <article className="product-panel overflow-hidden">
+            <div className="border-b border-hairline bg-canvas px-6 py-5">
+              <div className="flex flex-wrap gap-2">
+                <CategoryBadge category={activeQuestion.category} />
+                <DifficultyBadge difficulty={activeQuestion.difficulty} />
+                <TypeBadge type={activeQuestion.type} />
+                <span className="badge-pill bg-surface-card text-primary">
+                  Flashcard
+                </span>
+              </div>
+              <div className="mt-4">
+                <RichText
+                  text={activeQuestion.question}
+                  textClassName="display-heading text-[28px] leading-tight"
+                />
+              </div>
+            </div>
+            <div className="grid gap-5 px-6 py-6 lg:grid-cols-2">
+              <div>
+                <h3 className="text-sm font-semibold text-muted">
+                  {isSelfReviewedQuestion(activeQuestion) ? "Suggested answer" : "Answer"}
+                </h3>
+                <div className="mt-2">
+                  <RichText
+                    text={activeQuestion.answer.join("; ")}
+                    textClassName="text-sm leading-6 text-primary"
+                  />
+                </div>
+                <h3 className="mt-5 text-sm font-semibold text-muted">
+                  Oral answer
+                </h3>
+                <div className="mt-2">
+                  <RichText text={activeQuestion.interview_answer} />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-muted">
+                  {activeQuestion.type === "coding"
+                    ? "Reference implementation"
+                    : "Explanation"}
+                </h3>
+                <div className="mt-2">
+                  <RichText text={activeQuestion.explanation} />
+                </div>
+              </div>
+            </div>
+          </article>
+        ) : (
+          <QuestionAttempt
+            key={`${sessionId}-${activeQuestion.id}`}
+            question={activeQuestion}
+            onAnswered={handleAnswered}
+            showFeedback={false}
+            submitLabel="Lock Response"
+          />
+        )
       ) : null}
 
       <div className="flex flex-wrap gap-3">
-        {currentAnswer ? (
+        {isFlashcardMode || currentAnswer ? (
           <button className="button-primary" onClick={advance} type="button">
-            {currentIndex === mockQuestions.length - 1 ? "Finish Mock" : "Next"}
+            {currentIndex === mockQuestions.length - 1
+              ? isFlashcardMode
+                ? "Finish Review"
+                : "Finish Mock"
+              : isFlashcardMode
+                ? "Next Card"
+                : "Next"}
             <ArrowRight size={17} aria-hidden="true" />
           </button>
         ) : null}

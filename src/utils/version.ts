@@ -1,8 +1,19 @@
-export const APP_VERSION = "1.2.7";
+export const APP_VERSION = "1.2.8";
 
-export const RELEASE_DATE = "2026-05-13";
+export const RELEASE_DATE = "2026-05-14";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.8",
+    date: "2026-05-14",
+    title: "NVIDIA mock preset and flashcards",
+    changes: [
+      "Added a NVIDIA ASIC Hardware Design Engineer mock preset for JR20011787 based on the provided interview tips.",
+      "Curated the preset around Verilog writing, scripting mindset, problem solving, SoC methodology, CDC, clocks, reset, and latency.",
+      "Added a flashcard quick-review switch in Mock Interview Mode that shows answers immediately and advances card by card without scoring.",
+      "Added a practice-only reminder for company-specific interview preparation.",
+    ],
+  },
   {
     version: "1.2.7",
     date: "2026-05-13",
