@@ -1,8 +1,18 @@
-export const APP_VERSION = "1.2.10";
+export const APP_VERSION = "1.2.11";
 
 export const RELEASE_DATE = "2026-05-14";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.11",
+    date: "2026-05-14",
+    title: "RTL design practice problem page",
+    changes: [
+      "Added a dedicated RTL Design Practice Problems page with 25 RTL design drills.",
+      "Added answer-style design checklists for arbiters, FIFOs, CDC circuits, FSMs, CPU datapaths, cache replacement, UART TX, and SVA practice.",
+      "Added a footer link under the current version badge so the practice page is easy to find without crowding the main navigation.",
+    ],
+  },
   {
     version: "1.2.10",
     date: "2026-05-14",

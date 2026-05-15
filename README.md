@@ -1,6 +1,6 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.10`
+**Current app version:** `v1.2.11`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
@@ -42,6 +42,11 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
   - Search and filters for coding category and difficulty
   - LeetCode-style split view with prompt, checklist, interview notes, and reference implementation
   - Syntax-colored Verilog and SystemVerilog reference code blocks
+
+- **RTL Design Practice Problems**
+  - Footer-linked standalone page
+  - 25 RTL design drills for cycle-level implementation practice
+  - Answer-style design checklists for RTL, testbench, and SVA planning
 
 - **Practice Mode**
   - Category and difficulty selection
@@ -338,6 +343,12 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.11 - 2026-05-14
+
+- Added a dedicated RTL Design Practice Problems page with 25 RTL design drills.
+- Added answer-style design checklists for arbiters, FIFOs, CDC circuits, FSMs, CPU datapaths, cache replacement, UART TX, and SVA practice.
+- Added a footer link under the current version badge so the practice page is easy to find without crowding the main navigation.
 
 ### v1.2.10 - 2026-05-14
 

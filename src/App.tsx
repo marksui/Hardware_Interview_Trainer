@@ -21,6 +21,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { MockInterviewMode } from "./pages/MockInterviewMode";
 import { PracticeMode } from "./pages/PracticeMode";
 import { QuestionBank } from "./pages/QuestionBank";
+import { RtlDesignPracticeProblems } from "./pages/RtlDesignPracticeProblems";
 import { VersionHistory } from "./pages/VersionHistory";
 import { WrongQuestions } from "./pages/WrongQuestions";
 import type { ThemePreference } from "./types";
@@ -43,6 +44,7 @@ type PageId =
   | "wrong"
   | "cheatsheet"
   | "about"
+  | "rtl-practice"
   | "versions";
 
 const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
@@ -78,6 +80,10 @@ const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
     title: "About",
     subtitle: "Why this local-first trainer exists and how it supports hardware interview preparation.",
   },
+  "rtl-practice": {
+    title: "RTL Design Practice Problems",
+    subtitle: "A focused set of RTL design drills with answer checklists for interview preparation.",
+  },
   versions: {
     title: "Version History",
     subtitle: "Release notes for visible product, documentation, and deployment updates.",
@@ -101,7 +107,11 @@ const secondaryNavItems = [
   { id: "versions", label: "Versions", icon: History },
 ] satisfies NavItem[];
 
-const navItems = [...primaryNavItems, ...secondaryNavItems];
+const footerOnlyNavItems = [
+  { id: "rtl-practice", label: "RTL Practice", icon: Code2 },
+] satisfies NavItem[];
+
+const navItems = [...primaryNavItems, ...secondaryNavItems, ...footerOnlyNavItems];
 
 function getPageFromHash(): PageId {
   const hash = window.location.hash.replace("#", "");
@@ -210,6 +220,8 @@ export default function App() {
         return <Cheatsheet />;
       case "about":
         return <About />;
+      case "rtl-practice":
+        return <RtlDesignPracticeProblems />;
       case "versions":
         return <VersionHistory />;
       case "dashboard":
@@ -412,6 +424,13 @@ export default function App() {
                 type="button"
               >
                 Current version v{APP_VERSION}
+              </button>
+              <button
+                className="mt-3 block text-left text-sm font-semibold text-white"
+                onClick={() => navigate("rtl-practice")}
+                type="button"
+              >
+                RTL Design Practice Problems
               </button>
             </div>
 
