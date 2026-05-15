@@ -1,8 +1,18 @@
-export const APP_VERSION = "1.2.9";
+export const APP_VERSION = "1.2.10";
 
 export const RELEASE_DATE = "2026-05-14";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.10",
+    date: "2026-05-14",
+    title: "Syntax-colored RTL code blocks",
+    changes: [
+      "Added lightweight syntax coloring for Verilog and SystemVerilog reference code blocks.",
+      "Styled code tokens for keywords, types, numbers, comments, strings, operators, and system tasks.",
+      "Added separate light and dark code palettes so code examples no longer read as plain black-and-white text.",
+    ],
+  },
   {
     version: "1.2.9",
     date: "2026-05-14",

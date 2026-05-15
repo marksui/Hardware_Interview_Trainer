@@ -180,6 +180,88 @@ textarea:focus-visible {
     line-height: 1.25;
   }
 
+  .code-block {
+    overflow-x: auto;
+    border: 1px solid rgb(var(--color-hairline));
+    border-radius: 8px;
+    background: #f7f7f8;
+    padding: 14px;
+    color: #1f2937;
+    font-family: JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      "Liberation Mono", "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.65;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  }
+
+  .code-token-comment {
+    color: #64748b;
+    font-style: italic;
+  }
+
+  .code-token-keyword {
+    color: #7c3aed;
+    font-weight: 600;
+  }
+
+  .code-token-number {
+    color: #0f766e;
+    font-weight: 500;
+  }
+
+  .code-token-operator {
+    color: #475569;
+  }
+
+  .code-token-string {
+    color: #b45309;
+  }
+
+  .code-token-system {
+    color: #2563eb;
+    font-weight: 600;
+  }
+
+  .code-token-type {
+    color: #0369a1;
+    font-weight: 600;
+  }
+
+  :root[data-theme="dark"] .code-block {
+    border-color: rgba(63, 63, 70, 0.95);
+    background: #111114;
+    color: #d4d4d8;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  }
+
+  :root[data-theme="dark"] .code-token-comment {
+    color: #8b949e;
+  }
+
+  :root[data-theme="dark"] .code-token-keyword {
+    color: #c4b5fd;
+  }
+
+  :root[data-theme="dark"] .code-token-number {
+    color: #5eead4;
+  }
+
+  :root[data-theme="dark"] .code-token-operator {
+    color: #a1a1aa;
+  }
+
+  :root[data-theme="dark"] .code-token-string {
+    color: #fbbf24;
+  }
+
+  :root[data-theme="dark"] .code-token-system {
+    color: #93c5fd;
+  }
+
+  :root[data-theme="dark"] .code-token-type {
+    color: #7dd3fc;
+  }
+
   :root[data-theme="dark"] .badge-pill.bg-emerald-100,
   :root[data-theme="dark"] .badge-pill.bg-orange-100,
   :root[data-theme="dark"] .badge-pill.bg-rose-100,
