@@ -1,8 +1,18 @@
-export const APP_VERSION = "1.2.11";
+export const APP_VERSION = "1.2.12";
 
 export const RELEASE_DATE = "2026-05-14";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.12",
+    date: "2026-05-14",
+    title: "RTL practice reference implementations",
+    changes: [
+      "Added full reference RTL/code blocks to the RTL Design Practice Problems page.",
+      "Expanded the page with a NVIDIA phone-screen SRAM memory-controller design prompt and implementation skeleton.",
+      "Updated the page from checklist-only practice to problem, design notes, and syntax-colored reference implementation cards.",
+    ],
+  },
   {
     version: "1.2.11",
     date: "2026-05-14",

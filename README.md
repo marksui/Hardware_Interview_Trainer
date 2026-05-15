@@ -1,6 +1,6 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.11`
+**Current app version:** `v1.2.12`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
@@ -45,8 +45,8 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
 
 - **RTL Design Practice Problems**
   - Footer-linked standalone page
-  - 25 RTL design drills for cycle-level implementation practice
-  - Answer-style design checklists for RTL, testbench, and SVA planning
+  - 26 RTL design drills including the NVIDIA SRAM memory-controller phone-screen prompt
+  - Answer-style design notes plus syntax-colored reference RTL/code blocks
 
 - **Practice Mode**
   - Category and difficulty selection
@@ -343,6 +343,12 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.12 - 2026-05-14
+
+- Added full reference RTL/code blocks to the RTL Design Practice Problems page.
+- Expanded the page with a NVIDIA phone-screen SRAM memory-controller design prompt and implementation skeleton.
+- Updated the page from checklist-only practice to problem, design notes, and syntax-colored reference implementation cards.
 
 ### v1.2.11 - 2026-05-14
 
