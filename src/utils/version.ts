@@ -1,8 +1,18 @@
-export const APP_VERSION = "1.2.12";
+export const APP_VERSION = "1.2.13";
 
-export const RELEASE_DATE = "2026-05-14";
+export const RELEASE_DATE = "2026-05-15";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.13",
+    date: "2026-05-15",
+    title: "Verilog PDF review bank",
+    changes: [
+      "Added a dedicated Verilog Interview Review page for imported PDF study material.",
+      "Converted Verilog面试题.pdf into 375 structured review cards across 25 chapters.",
+      "Added chapter filtering and keyword search while serving the large review bank as static JSON from public/data.",
+    ],
+  },
   {
     version: "1.2.12",
     date: "2026-05-14",

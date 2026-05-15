@@ -4,6 +4,7 @@ import {
   BrainCircuit,
   ClipboardList,
   Code2,
+  FileText,
   Gauge,
   History,
   Info,
@@ -22,6 +23,7 @@ import { MockInterviewMode } from "./pages/MockInterviewMode";
 import { PracticeMode } from "./pages/PracticeMode";
 import { QuestionBank } from "./pages/QuestionBank";
 import { RtlDesignPracticeProblems } from "./pages/RtlDesignPracticeProblems";
+import { VerilogInterviewReview } from "./pages/VerilogInterviewReview";
 import { VersionHistory } from "./pages/VersionHistory";
 import { WrongQuestions } from "./pages/WrongQuestions";
 import type { ThemePreference } from "./types";
@@ -45,6 +47,7 @@ type PageId =
   | "cheatsheet"
   | "about"
   | "rtl-practice"
+  | "verilog-review"
   | "versions";
 
 const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
@@ -84,6 +87,10 @@ const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
     title: "RTL Design Practice Problems",
     subtitle: "A focused set of RTL design drills with answer checklists for interview preparation.",
   },
+  "verilog-review": {
+    title: "Verilog Interview Review",
+    subtitle: "Searchable review cards imported from the local Verilog interview PDF.",
+  },
   versions: {
     title: "Version History",
     subtitle: "Release notes for visible product, documentation, and deployment updates.",
@@ -109,6 +116,7 @@ const secondaryNavItems = [
 
 const footerOnlyNavItems = [
   { id: "rtl-practice", label: "RTL Practice", icon: Code2 },
+  { id: "verilog-review", label: "Verilog Review", icon: FileText },
 ] satisfies NavItem[];
 
 const navItems = [...primaryNavItems, ...secondaryNavItems, ...footerOnlyNavItems];
@@ -222,6 +230,8 @@ export default function App() {
         return <About />;
       case "rtl-practice":
         return <RtlDesignPracticeProblems />;
+      case "verilog-review":
+        return <VerilogInterviewReview />;
       case "versions":
         return <VersionHistory />;
       case "dashboard":
@@ -431,6 +441,13 @@ export default function App() {
                 type="button"
               >
                 RTL Design Practice Problems
+              </button>
+              <button
+                className="mt-2 block text-left text-sm font-semibold text-white"
+                onClick={() => navigate("verilog-review")}
+                type="button"
+              >
+                Verilog Interview Review
               </button>
             </div>
 

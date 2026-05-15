@@ -1,10 +1,10 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.12`
+**Current app version:** `v1.2.13`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
-The app combines a 178-question interview bank, a dedicated code-question view, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
+The app combines a 178-question interview bank, a dedicated code-question view, a 375-card Verilog PDF review bank, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
 
 Related project: [Logic & CMOS Studio](https://marksui.github.io/logic-cmos-studio/) is a companion educational EDA mini-tool for Boolean logic, Karnaugh maps, Verilog export, and static CMOS network visualization.
 
@@ -47,6 +47,13 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
   - Footer-linked standalone page
   - 26 RTL design drills including the NVIDIA SRAM memory-controller phone-screen prompt
   - Answer-style design notes plus syntax-colored reference RTL/code blocks
+
+- **Verilog Interview Review**
+  - Footer-linked standalone page
+  - 375 review cards imported from `Verilog面试题.pdf`
+  - Chapter filtering and keyword search
+  - Structured sections for 解读, 知识点, 答案, and 拓展思考
+  - Static JSON delivery from `public/data`, keeping the app backend-free
 
 - **Practice Mode**
   - Category and difficulty selection
@@ -122,6 +129,9 @@ Browser-only React app
         |-- src/data/questions.json
         |     Static question bank loaded at build time
         |
+        |-- public/data/verilogInterviewReview.json
+        |     Static imported Verilog PDF review bank loaded on demand
+        |
         |-- src/utils/questions.ts
         |     Filtering, category metadata, answer evaluation, shuffling
         |
@@ -139,7 +149,7 @@ The app is deliberately static. Questions are bundled as JSON, routing is hash-b
 
 ## Data Model
 
-Questions live in [`src/data/questions.json`](src/data/questions.json). Each question follows this schema:
+Core quiz questions live in [`src/data/questions.json`](src/data/questions.json). Each question follows this schema:
 
 ```json
 {
@@ -168,13 +178,15 @@ Supported question types:
 - `short_answer`
 - `coding`
 
+The imported Verilog PDF review content lives in [`public/data/verilogInterviewReview.json`](public/data/verilogInterviewReview.json). It is kept outside the main bundle and loaded only when the Verilog Interview Review page opens. Each item contains its original number, chapter, section, title, and structured review sections.
+
 Local progress export format:
 
 ```json
 {
   "app": "Hardware Interview Trainer",
   "version": 1,
-  "appVersion": "1.2.7",
+  "appVersion": "1.2.13",
   "exportedAt": "2026-05-13T00:00:00.000Z",
   "wrongQuestions": ["rtl-001", "sta-004"],
   "analytics": {
@@ -197,7 +209,10 @@ Local progress export format:
 │   ├── index.css
 │   └── index.js
 ├── dev.html
-├── public/.nojekyll
+├── public
+│   ├── .nojekyll
+│   └── data
+│       └── verilogInterviewReview.json
 ├── scripts
 │   ├── prepare-pages.mjs
 │   └── sync-root-pages.mjs
@@ -216,6 +231,7 @@ Local progress export format:
 │   │   ├── MockInterviewMode.tsx
 │   │   ├── PracticeMode.tsx
 │   │   ├── QuestionBank.tsx
+│   │   ├── VerilogInterviewReview.tsx
 │   │   └── WrongQuestions.tsx
 │   ├── utils
 │   │   ├── questions.ts
@@ -241,6 +257,7 @@ Add generated screenshots here when publishing the project:
 | Dashboard | `docs/screenshots/dashboard.png` |
 | Question Bank | `docs/screenshots/question-bank.png` |
 | Code Questions | `docs/screenshots/code-questions.png` |
+| Verilog Interview Review | `docs/screenshots/verilog-review.png` |
 | Practice Mode | `docs/screenshots/practice-mode.png` |
 | Mock Interview Mode | `docs/screenshots/mock-interview-mode.png` |
 | Wrong Questions | `docs/screenshots/wrong-questions.png` |
@@ -343,6 +360,12 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.13 - 2026-05-15
+
+- Added a dedicated Verilog Interview Review page.
+- Imported 375 review cards from `Verilog面试题.pdf` into static JSON.
+- Added chapter filtering and keyword search for the imported PDF review material.
 
 ### v1.2.12 - 2026-05-14
 
