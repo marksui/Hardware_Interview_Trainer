@@ -1,10 +1,10 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.14`
+**Current app version:** `v1.2.15`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
-The app combines a 190-question interview bank, a dedicated code-question view, a C++/Python programming review page, a 375-card Verilog PDF review bank, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
+The app combines a 178-question interview bank, a dedicated code-question view, a C++/Python/DSA programming review page, a 375-card Verilog PDF review bank, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
 
 Related project: [Logic & CMOS Studio](https://marksui.github.io/logic-cmos-studio/) is a companion educational EDA mini-tool for Boolean logic, Karnaugh maps, Verilog export, and static CMOS network visualization.
 
@@ -44,9 +44,10 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
   - Syntax-colored Verilog and SystemVerilog reference code blocks
 
 - **Programming Review**
-  - Main-nav standalone page for C++ and Python coding review
-  - Language and topic filters for DFS, BFS, stack, queue, graph, and grid problems
-  - Example-driven cards with checklist, interview explanation, and reference implementation
+  - Main-nav standalone review page for concepts that may come up in coding interviews
+  - C++ review cards for STL containers, references, const, sorting, map tradeoffs, and RAII basics
+  - Python review cards for containers, collections, sorting, and common pitfalls
+  - DSA review cards for DFS, BFS, stack, queue/deque, graph representation, complexity, and edge cases
 
 - **RTL Design Practice Problems**
   - Footer-linked standalone page
@@ -191,7 +192,7 @@ Local progress export format:
 {
   "app": "Hardware Interview Trainer",
   "version": 1,
-  "appVersion": "1.2.14",
+  "appVersion": "1.2.15",
   "exportedAt": "2026-05-13T00:00:00.000Z",
   "wrongQuestions": ["rtl-001", "sta-004"],
   "analytics": {
@@ -367,12 +368,12 @@ Hardware Interview Trainer does not track users.
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
 
-### v1.2.14 - 2026-05-28
+### v1.2.15 - 2026-05-28
 
-- Added 12 C++ and Python programming coding prompts covering DFS, BFS, stack, queue, graph traversal, grid shortest path, and expression evaluation.
-- Added a standalone Programming Review page with language and topic filters plus example/reference-code review cards.
-- Added Programming Review entry points in the main navigation, dashboard, and footer.
-- Updated the question bank total to 190 questions.
+- Moved C++ and Python programming material out of the main question bank and into a standalone review page.
+- Added review cards for C++ STL, references, const, sorting, memory basics, Python containers, collections, sorting, pitfalls, DFS, BFS, stack, queue, graph representation, and complexity.
+- Kept Programming Review as a searchable reference interface for likely interview concepts instead of graded practice questions.
+- Restored the question bank total to 178 questions.
 
 ### v1.2.13 - 2026-05-15
 

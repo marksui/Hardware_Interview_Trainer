@@ -1,17 +1,17 @@
-export const APP_VERSION = "1.2.14";
+export const APP_VERSION = "1.2.15";
 
 export const RELEASE_DATE = "2026-05-28";
 
 export const CHANGELOG = [
   {
-    version: "1.2.14",
+    version: "1.2.15",
     date: "2026-05-28",
-    title: "C++ and Python programming review",
+    title: "Programming review cards",
     changes: [
-      "Added 12 C++ and Python programming coding prompts covering DFS, BFS, stack, queue, graph traversal, grid shortest path, and expression evaluation.",
-      "Added a standalone Programming Review page with language and topic filters plus example/reference-code review cards.",
-      "Added Programming Review entry points in the main navigation, dashboard, and footer.",
-      "Updated the question bank total to 190 questions.",
+      "Moved C++ and Python programming material out of the main question bank and into a standalone review page.",
+      "Added review cards for C++ STL, references, const, sorting, memory basics, Python containers, collections, sorting, pitfalls, DFS, BFS, stack, queue, graph representation, and complexity.",
+      "Kept Programming Review as a searchable reference interface for likely interview concepts instead of graded practice questions.",
+      "Restored the question bank total to 178 questions.",
     ],
   },
   {

@@ -152,7 +152,7 @@ export function Dashboard({
               </h2>
               <p className="mt-2 text-sm leading-6 text-body">
                 Practice for targeted repetition, inspect RTL coding prompts,
-                review C++/Python basics, then switch to timed mock rounds.
+                review programming concepts, then switch to timed mock rounds.
               </p>
             </div>
 

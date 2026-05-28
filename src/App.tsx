@@ -68,7 +68,7 @@ const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
   },
   "programming-review": {
     title: "Programming Review",
-    subtitle: "Review C++ and Python DFS, BFS, stack, queue, graph, and grid coding patterns with examples.",
+    subtitle: "Review likely C++, Python, DFS, BFS, stack, queue, graph, and complexity concepts.",
   },
   practice: {
     title: "Practice Mode",
