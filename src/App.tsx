@@ -4,6 +4,7 @@ import {
   BrainCircuit,
   ClipboardList,
   Code2,
+  FileCode2,
   FileText,
   Gauge,
   History,
@@ -21,6 +22,7 @@ import { CodeQuestions } from "./pages/CodeQuestions";
 import { Dashboard } from "./pages/Dashboard";
 import { MockInterviewMode } from "./pages/MockInterviewMode";
 import { PracticeMode } from "./pages/PracticeMode";
+import { ProgrammingReview } from "./pages/ProgrammingReview";
 import { QuestionBank } from "./pages/QuestionBank";
 import { RtlDesignPracticeProblems } from "./pages/RtlDesignPracticeProblems";
 import { VerilogInterviewReview } from "./pages/VerilogInterviewReview";
@@ -41,6 +43,7 @@ type PageId =
   | "dashboard"
   | "bank"
   | "code"
+  | "programming-review"
   | "practice"
   | "mock"
   | "wrong"
@@ -62,6 +65,10 @@ const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
   code: {
     title: "Code Questions",
     subtitle: "View every RTL coding prompt with a LeetCode-style problem and reference implementation layout.",
+  },
+  "programming-review": {
+    title: "Programming Review",
+    subtitle: "Review C++ and Python DFS, BFS, stack, queue, graph, and grid coding patterns with examples.",
   },
   practice: {
     title: "Practice Mode",
@@ -103,6 +110,7 @@ const primaryNavItems = [
   { id: "dashboard", label: "Dashboard", icon: Gauge },
   { id: "bank", label: "Bank", icon: LibraryBig },
   { id: "code", label: "Code", icon: Code2 },
+  { id: "programming-review", label: "Algo", icon: FileCode2 },
   { id: "practice", label: "Practice", icon: BrainCircuit },
   { id: "mock", label: "Mock", icon: Timer },
   { id: "wrong", label: "Wrong", icon: AlertTriangle },
@@ -212,6 +220,8 @@ export default function App() {
         return <QuestionBank />;
       case "code":
         return <CodeQuestions />;
+      case "programming-review":
+        return <ProgrammingReview />;
       case "practice":
         return <PracticeMode onWrongChanged={refreshWrongIds} />;
       case "mock":
@@ -459,6 +469,9 @@ export default function App() {
                 </button>
                 <button className="text-left text-on-dark-soft" onClick={() => navigate("code")} type="button">
                   Code Questions
+                </button>
+                <button className="text-left text-on-dark-soft" onClick={() => navigate("programming-review")} type="button">
+                  Programming Review
                 </button>
                 <button className="text-left text-on-dark-soft" onClick={() => navigate("mock")} type="button">
                   Mock Interview

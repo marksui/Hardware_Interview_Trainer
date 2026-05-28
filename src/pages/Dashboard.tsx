@@ -5,6 +5,7 @@ import {
   BrainCircuit,
   Code2,
   Download,
+  FileCode2,
   FileJson,
   Layers3,
   Play,
@@ -150,8 +151,8 @@ export function Dashboard({
                 Start training
               </h2>
               <p className="mt-2 text-sm leading-6 text-body">
-                Practice for targeted repetition, inspect coding prompts, then
-                switch to timed mock rounds when you want interview pressure.
+                Practice for targeted repetition, inspect RTL coding prompts,
+                review C++/Python basics, then switch to timed mock rounds.
               </p>
             </div>
 
@@ -193,6 +194,14 @@ export function Dashboard({
               >
                 <Code2 size={17} aria-hidden="true" />
                 Code Questions
+              </button>
+              <button
+                className="button-secondary"
+                onClick={() => navigate("programming-review")}
+                type="button"
+              >
+                <FileCode2 size={17} aria-hidden="true" />
+                Programming Review
               </button>
               <button
                 className="button-secondary"
