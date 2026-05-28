@@ -1,6 +1,6 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.15`
+**Current app version:** `v1.2.16`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
@@ -44,10 +44,12 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
   - Syntax-colored Verilog and SystemVerilog reference code blocks
 
 - **Programming Review**
-  - Main-nav standalone review page for concepts that may come up in coding interviews
+  - Main-nav standalone review workspace for concepts that may come up in coding interviews
+  - Search, area filters, topic filters, active-card highlighting, and previous/next card controls
   - C++ review cards for STL containers, references, const, sorting, map tradeoffs, and RAII basics
   - Python review cards for containers, collections, sorting, and common pitfalls
   - DSA review cards for DFS, BFS, stack, queue/deque, graph representation, complexity, and edge cases
+  - Syntax-colored C++ and Python snippets in review examples
 
 - **RTL Design Practice Problems**
   - Footer-linked standalone page
@@ -367,6 +369,13 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.16 - 2026-05-28
+
+- Redesigned Programming Review as a focused review workspace with summary metrics, clearer filters, active-card highlighting, and previous/next card navigation.
+- Improved review-card layout with stronger separation between remember points, likely asks, examples, and interview explanation angles.
+- Expanded code-block highlighting for C++ and Python snippets used in review cards.
+- Renamed the main navigation entry from Algo to Review for clearer intent.
 
 ### v1.2.15 - 2026-05-28
 

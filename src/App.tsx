@@ -110,7 +110,7 @@ const primaryNavItems = [
   { id: "dashboard", label: "Dashboard", icon: Gauge },
   { id: "bank", label: "Bank", icon: LibraryBig },
   { id: "code", label: "Code", icon: Code2 },
-  { id: "programming-review", label: "Algo", icon: FileCode2 },
+  { id: "programming-review", label: "Review", icon: FileCode2 },
   { id: "practice", label: "Practice", icon: BrainCircuit },
   { id: "mock", label: "Mock", icon: Timer },
   { id: "wrong", label: "Wrong", icon: AlertTriangle },

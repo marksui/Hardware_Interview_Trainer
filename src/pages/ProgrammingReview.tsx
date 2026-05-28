@@ -1,8 +1,14 @@
 import {
+  ArrowLeft,
+  ArrowRight,
   BookOpenCheck,
+  CheckCircle2,
   Code2,
   FileCode2,
+  Filter,
+  Lightbulb,
   ListChecks,
+  RotateCcw,
   Search,
   SlidersHorizontal,
 } from "lucide-react";
@@ -455,6 +461,16 @@ function matchesSearch(item: ReviewItem, query: string) {
   return terms.every((term) => searchable.includes(term));
 }
 
+function getLanguageBadgeStyle(language: ReviewLanguage) {
+  const styles: Record<ReviewLanguage, string> = {
+    "C++": "bg-sky-100 text-ink-950",
+    Python: "bg-emerald-100 text-ink-950",
+    DSA: "bg-amber-100 text-ink-950",
+  };
+
+  return styles[language];
+}
+
 export function ProgrammingReview() {
   const [language, setLanguage] =
     useState<(typeof languageFilters)[number]["id"]>("all");
@@ -481,6 +497,11 @@ export function ProgrammingReview() {
 
   const selectedItem =
     filteredItems.find((item) => item.id === selectedId) ?? filteredItems[0];
+  const selectedIndex = selectedItem
+    ? filteredItems.findIndex((item) => item.id === selectedItem.id)
+    : -1;
+  const hasFilters = language !== "all" || topic !== "all" || query.trim().length > 0;
+  const visibleTags = selectedItem?.tags.slice(0, 6) ?? [];
 
   const resetFilters = () => {
     setLanguage("all");
@@ -488,47 +509,115 @@ export function ProgrammingReview() {
     setQuery("");
   };
 
+  const moveSelection = (direction: -1 | 1) => {
+    if (selectedIndex === -1 || filteredItems.length === 0) {
+      return;
+    }
+
+    const nextIndex =
+      (selectedIndex + direction + filteredItems.length) % filteredItems.length;
+    setSelectedId(filteredItems[nextIndex].id);
+  };
+
   return (
-    <div className="space-y-6">
-      <section className="grid gap-4 md:grid-cols-4">
-        <div className="panel p-5">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-sm font-medium text-muted">Review cards</p>
-            <BookOpenCheck size={20} aria-hidden="true" />
+    <div className="space-y-5">
+      <section className="grid gap-4 lg:grid-cols-[1fr_280px]">
+        <div className="panel p-5 sm:p-6">
+          <div className="flex flex-col gap-5 xl:flex-row xl:items-end xl:justify-between">
+            <div>
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-canvas text-primary">
+                <BookOpenCheck size={22} aria-hidden="true" />
+              </div>
+              <h3 className="display-heading mt-4 text-[28px] leading-tight">
+                Interview review workspace
+              </h3>
+              <p className="mt-2 max-w-2xl text-sm leading-6 text-body">
+                Use this as a quick concept deck before coding interviews: pick
+                an area, scan the likely asks, then rehearse the explanation.
+              </p>
+            </div>
+            <div className="grid grid-cols-3 gap-2 text-center text-xs font-semibold sm:w-[360px]">
+              <div className="rounded-md bg-canvas px-2 py-3">
+                Cards
+                <span className="mt-1 block text-xl text-primary">
+                  {reviewItems.length}
+                </span>
+              </div>
+              <div className="rounded-md bg-canvas px-2 py-3">
+                Showing
+                <span className="mt-1 block text-xl text-primary">
+                  {filteredItems.length}
+                </span>
+              </div>
+              <div className="rounded-md bg-canvas px-2 py-3">
+                Areas
+                <span className="mt-1 block text-xl text-primary">3</span>
+              </div>
+            </div>
           </div>
-          <p className="display-heading mt-2 text-3xl">{reviewItems.length}</p>
         </div>
+
         <div className="panel p-5">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-sm font-medium text-muted">C++ topics</p>
-            <FileCode2 size={20} aria-hidden="true" />
+          <p className="text-sm font-semibold text-primary">Study mix</p>
+          <div className="mt-4 grid gap-3">
+            {[
+              {
+                icon: FileCode2,
+                label: "C++",
+                value: countBy((item) => item.language === "C++"),
+              },
+              {
+                icon: Code2,
+                label: "Python",
+                value: countBy((item) => item.language === "Python"),
+              },
+              {
+                icon: ListChecks,
+                label: "DSA",
+                value: countBy((item) => item.language === "DSA"),
+              },
+            ].map((item) => {
+              const Icon = item.icon;
+
+              return (
+                <div
+                  className="flex items-center justify-between rounded-md bg-canvas px-3 py-3"
+                  key={item.label}
+                >
+                  <span className="inline-flex items-center gap-2 text-sm font-semibold text-body">
+                    <Icon size={16} aria-hidden="true" />
+                    {item.label}
+                  </span>
+                  <span className="font-code text-sm font-semibold text-primary">
+                    {item.value}
+                  </span>
+                </div>
+              );
+            })}
           </div>
-          <p className="display-heading mt-2 text-3xl">
-            {countBy((item) => item.language === "C++")}
-          </p>
-        </div>
-        <div className="panel p-5">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-sm font-medium text-muted">Python topics</p>
-            <Code2 size={20} aria-hidden="true" />
-          </div>
-          <p className="display-heading mt-2 text-3xl">
-            {countBy((item) => item.language === "Python")}
-          </p>
-        </div>
-        <div className="panel p-5">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-sm font-medium text-muted">DSA patterns</p>
-            <ListChecks size={20} aria-hidden="true" />
-          </div>
-          <p className="display-heading mt-2 text-3xl">
-            {countBy((item) => item.language === "DSA")}
-          </p>
         </div>
       </section>
 
-      <section className="panel p-5">
-        <div className="grid gap-4 xl:grid-cols-[1fr_auto] xl:items-end">
+      <section className="product-panel overflow-hidden">
+        <div className="border-b border-hairline bg-surface-soft px-5 py-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="inline-flex items-center gap-2 text-sm font-semibold text-primary">
+              <Filter size={16} aria-hidden="true" />
+              Focus controls
+            </div>
+            <button
+              className="button-secondary min-h-9 px-3 py-2"
+              disabled={!hasFilters}
+              onClick={resetFilters}
+              type="button"
+            >
+              <RotateCcw size={15} aria-hidden="true" />
+              Reset
+            </button>
+          </div>
+        </div>
+
+        <div className="space-y-5 p-5">
           <label className="block">
             <span className="mb-2 block text-xs font-semibold uppercase tracking-normal text-muted">
               Search review notes, examples, and likely asks
@@ -548,57 +637,49 @@ export function ProgrammingReview() {
             </div>
           </label>
 
-          <button
-            className="button-secondary px-3 py-2"
-            onClick={resetFilters}
-            type="button"
-          >
-            Reset filters
-          </button>
-        </div>
-
-        <div className="mt-5 grid gap-4 lg:grid-cols-2">
-          <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-normal text-muted">
-              Area
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {languageFilters.map((item) => (
-                <button
-                  className={`rounded-md px-3 py-2 text-sm font-semibold transition ${
-                    language === item.id
-                      ? "bg-action text-on-action"
-                      : "bg-canvas text-primary"
-                  }`}
-                  key={item.id}
-                  onClick={() => setLanguage(item.id)}
-                  type="button"
-                >
-                  {item.label}
-                </button>
-              ))}
+          <div className="grid gap-5 lg:grid-cols-[0.8fr_1.2fr]">
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-normal text-muted">
+                Area
+              </p>
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-2">
+                {languageFilters.map((item) => (
+                  <button
+                    className={`min-h-10 rounded-md px-3 py-2 text-sm font-semibold transition ${
+                      language === item.id
+                        ? "bg-action text-on-action"
+                        : "bg-canvas text-primary"
+                    }`}
+                    key={item.id}
+                    onClick={() => setLanguage(item.id)}
+                    type="button"
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div>
-            <p className="mb-2 text-xs font-semibold uppercase tracking-normal text-muted">
-              Topic
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {topicFilters.map((item) => (
-                <button
-                  className={`rounded-md px-3 py-2 text-sm font-semibold transition ${
-                    topic === item.id
-                      ? "bg-action text-on-action"
-                      : "bg-canvas text-primary"
-                  }`}
-                  key={item.id}
-                  onClick={() => setTopic(item.id)}
-                  type="button"
-                >
-                  {item.label}
-                </button>
-              ))}
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-normal text-muted">
+                Topic
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {topicFilters.map((item) => (
+                  <button
+                    className={`min-h-10 rounded-md px-3 py-2 text-sm font-semibold transition ${
+                      topic === item.id
+                        ? "bg-action text-on-action"
+                        : "bg-canvas text-primary"
+                    }`}
+                    key={item.id}
+                    onClick={() => setTopic(item.id)}
+                    type="button"
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -622,8 +703,10 @@ export function ProgrammingReview() {
 
               return (
                 <button
-                  className={`block w-full px-4 py-4 text-left transition ${
-                    isSelected ? "bg-surface-soft" : "bg-canvas hover:bg-surface-soft"
+                  className={`block w-full border-l-4 px-4 py-4 text-left transition ${
+                    isSelected
+                      ? "border-primary bg-surface-soft"
+                      : "border-transparent bg-canvas hover:bg-surface-soft"
                   }`}
                   key={item.id}
                   onClick={() => setSelectedId(item.id)}
@@ -643,6 +726,16 @@ export function ProgrammingReview() {
                   <p className="mt-2 text-xs leading-5 text-muted">
                     {item.summary}
                   </p>
+                  <div className="mt-3 flex flex-wrap gap-1.5">
+                    {item.tags.slice(0, 3).map((tag) => (
+                      <span
+                        className="rounded-md bg-surface-card px-2 py-1 text-[11px] font-semibold text-muted"
+                        key={tag}
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
                 </button>
               );
             })}
@@ -658,33 +751,63 @@ export function ProgrammingReview() {
         {selectedItem ? (
           <article className="product-panel overflow-hidden">
             <div className="border-b border-hairline bg-canvas px-5 py-4">
-              <div className="flex flex-wrap gap-2">
-                <span className="badge-pill bg-sky-100 text-ink-950">
-                  {selectedItem.language}
-                </span>
-                <span className="badge-pill bg-surface-card text-primary">
-                  {selectedItem.topic}
-                </span>
-                {selectedItem.tags.slice(0, 4).map((tag) => (
-                  <span className="badge-pill bg-surface-card text-primary" key={tag}>
-                    #{tag}
-                  </span>
-                ))}
+              <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
+                <div>
+                  <div className="flex flex-wrap gap-2">
+                    <span
+                      className={`badge-pill ${getLanguageBadgeStyle(
+                        selectedItem.language,
+                      )}`}
+                    >
+                      {selectedItem.language}
+                    </span>
+                    <span className="badge-pill bg-surface-card text-primary">
+                      {selectedItem.topic}
+                    </span>
+                    {visibleTags.map((tag) => (
+                      <span
+                        className="badge-pill bg-surface-card text-primary"
+                        key={tag}
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                  <p className="mt-4 font-code text-xs font-semibold text-muted">
+                    {selectedItem.id}
+                  </p>
+                  <h3 className="display-heading mt-2 text-[28px] leading-tight">
+                    {selectedItem.title}
+                  </h3>
+                  <p className="mt-3 max-w-3xl text-sm leading-6 text-body">
+                    {selectedItem.summary}
+                  </p>
+                </div>
+                <div className="flex shrink-0 gap-2">
+                  <button
+                    className="icon-button"
+                    onClick={() => moveSelection(-1)}
+                    title="Previous review card"
+                    type="button"
+                  >
+                    <ArrowLeft size={17} aria-hidden="true" />
+                  </button>
+                  <button
+                    className="icon-button"
+                    onClick={() => moveSelection(1)}
+                    title="Next review card"
+                    type="button"
+                  >
+                    <ArrowRight size={17} aria-hidden="true" />
+                  </button>
+                </div>
               </div>
-              <p className="mt-4 font-code text-xs font-semibold text-muted">
-                {selectedItem.id}
-              </p>
-              <h3 className="display-heading mt-2 text-[28px] leading-tight">
-                {selectedItem.title}
-              </h3>
-              <p className="mt-3 text-sm leading-6 text-body">
-                {selectedItem.summary}
-              </p>
             </div>
 
-            <div className="grid lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+            <div className="grid gap-0 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
               <section className="border-b border-hairline p-5 lg:border-b-0 lg:border-r">
-                <h4 className="text-sm font-semibold text-muted">
+                <h4 className="inline-flex items-center gap-2 text-sm font-semibold text-muted">
+                  <CheckCircle2 size={16} aria-hidden="true" />
                   What to remember
                 </h4>
                 <ul className="mt-3 space-y-2">
@@ -698,16 +821,20 @@ export function ProgrammingReview() {
                   ))}
                 </ul>
 
-                <h4 className="mt-6 text-sm font-semibold text-muted">
+                <h4 className="mt-6 inline-flex items-center gap-2 text-sm font-semibold text-muted">
+                  <Lightbulb size={16} aria-hidden="true" />
                   May be asked as
                 </h4>
-                <ul className="mt-3 space-y-2">
+                <div className="mt-3 grid gap-2">
                   {selectedItem.likelyAsks.map((item) => (
-                    <li className="text-sm leading-6 text-body" key={item}>
+                    <div
+                      className="rounded-md border border-hairline bg-canvas px-3 py-2 text-sm leading-6 text-body"
+                      key={item}
+                    >
                       {item}
-                    </li>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </section>
 
               <section className="p-5">
@@ -721,8 +848,11 @@ export function ProgrammingReview() {
                 <h4 className="mt-6 text-sm font-semibold text-muted">
                   Interview angle
                 </h4>
-                <div className="mt-3">
-                  <RichText text={selectedItem.interviewAngle} />
+                <div className="mt-3 rounded-md border border-hairline bg-surface-soft px-4 py-3">
+                  <RichText
+                    text={selectedItem.interviewAngle}
+                    textClassName="text-sm leading-6 text-primary"
+                  />
                 </div>
               </section>
             </div>

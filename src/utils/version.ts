@@ -1,8 +1,19 @@
-export const APP_VERSION = "1.2.15";
+export const APP_VERSION = "1.2.16";
 
 export const RELEASE_DATE = "2026-05-28";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.16",
+    date: "2026-05-28",
+    title: "Programming review UI refresh",
+    changes: [
+      "Redesigned Programming Review as a focused review workspace with summary metrics, clearer filters, active-card highlighting, and previous/next card navigation.",
+      "Improved review-card layout with stronger separation between remember points, likely asks, examples, and interview explanation angles.",
+      "Expanded code-block highlighting for C++ and Python snippets used in review cards.",
+      "Renamed the main navigation entry from Algo to Review for clearer intent.",
+    ],
+  },
   {
     version: "1.2.15",
     date: "2026-05-28",

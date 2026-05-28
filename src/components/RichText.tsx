@@ -70,6 +70,134 @@ const rtlTypes = new Set([
   "wire",
 ]);
 
+const cppKeywords = new Set([
+  "auto",
+  "bool",
+  "break",
+  "case",
+  "class",
+  "const",
+  "continue",
+  "else",
+  "false",
+  "for",
+  "if",
+  "namespace",
+  "private",
+  "public",
+  "return",
+  "struct",
+  "switch",
+  "true",
+  "using",
+  "void",
+  "while",
+]);
+
+const cppTypes = new Set([
+  "deque",
+  "greater",
+  "int",
+  "long",
+  "map",
+  "pair",
+  "priority_queue",
+  "queue",
+  "set",
+  "size_t",
+  "stack",
+  "string",
+  "tuple",
+  "unordered_map",
+  "unordered_set",
+  "unique_ptr",
+  "vector",
+]);
+
+const pythonKeywords = new Set([
+  "and",
+  "as",
+  "class",
+  "continue",
+  "def",
+  "elif",
+  "else",
+  "False",
+  "for",
+  "from",
+  "if",
+  "import",
+  "in",
+  "is",
+  "lambda",
+  "None",
+  "not",
+  "or",
+  "return",
+  "True",
+  "while",
+  "with",
+]);
+
+const pythonTypes = new Set([
+  "Counter",
+  "defaultdict",
+  "deque",
+  "dict",
+  "heapq",
+  "int",
+  "list",
+  "set",
+  "str",
+  "tuple",
+]);
+
+function getCodeLanguage(language?: string) {
+  return (language ?? "").toLowerCase();
+}
+
+function classifyWord(word: string, language?: string): CodeTokenKind {
+  const normalizedLanguage = getCodeLanguage(language);
+
+  if (word.startsWith("$")) {
+    return "system";
+  }
+
+  if (normalizedLanguage === "python" || normalizedLanguage === "py") {
+    if (pythonKeywords.has(word)) {
+      return "keyword";
+    }
+
+    if (pythonTypes.has(word)) {
+      return "type";
+    }
+  }
+
+  if (
+    normalizedLanguage === "cpp" ||
+    normalizedLanguage === "c++" ||
+    normalizedLanguage === "cc"
+  ) {
+    if (cppKeywords.has(word)) {
+      return "keyword";
+    }
+
+    if (cppTypes.has(word)) {
+      return "type";
+    }
+  }
+
+  if (rtlKeywords.has(word)) {
+    return "keyword";
+  }
+
+  if (rtlTypes.has(word)) {
+    return "type";
+  }
+
+  return "plain";
+}
+
 function parseRichText(text: string): RichTextBlock[] {
   const blocks: RichTextBlock[] = [];
   const codeFencePattern = /```(\w+)?\n([\s\S]*?)```/g;
@@ -106,7 +234,7 @@ function readPattern(content: string, index: number, pattern: RegExp) {
   return match?.index === 0 ? match[0] : "";
 }
 
-function tokenizeCode(content: string): CodeToken[] {
+function tokenizeCode(content: string, language?: string): CodeToken[] {
   const tokens: CodeToken[] = [];
   let index = 0;
 
@@ -114,6 +242,14 @@ function tokenizeCode(content: string): CodeToken[] {
     const rest = content.slice(index);
 
     if (rest.startsWith("//")) {
+      const end = content.indexOf("\n", index);
+      const value = content.slice(index, end === -1 ? content.length : end);
+      tokens.push({ kind: "comment", value });
+      index += value.length;
+      continue;
+    }
+
+    if (rest.startsWith("#")) {
       const end = content.indexOf("\n", index);
       const value = content.slice(index, end === -1 ? content.length : end);
       tokens.push({ kind: "comment", value });
@@ -129,8 +265,12 @@ function tokenizeCode(content: string): CodeToken[] {
       continue;
     }
 
-    if (rest[0] === '"') {
-      const match = /^"(?:\\.|[^"\\])*"/.exec(rest);
+    if (rest[0] === '"' || rest[0] === "'") {
+      const quote = rest[0];
+      const match =
+        quote === '"'
+          ? /^"(?:\\.|[^"\\])*"/.exec(rest)
+          : /^'(?:\\.|[^'\\])*'/.exec(rest);
       const value = match ? match[0] : rest[0];
       tokens.push({ kind: "string", value });
       index += value.length;
@@ -160,14 +300,7 @@ function tokenizeCode(content: string): CodeToken[] {
     const word = readPattern(content, index, /^[A-Za-z_$][A-Za-z0-9_$]*/);
 
     if (word) {
-      const kind = word.startsWith("$")
-        ? "system"
-        : rtlKeywords.has(word)
-          ? "keyword"
-          : rtlTypes.has(word)
-            ? "type"
-            : "plain";
-      tokens.push({ kind, value: word });
+      tokens.push({ kind: classifyWord(word, language), value: word });
       index += word.length;
       continue;
     }
@@ -187,10 +320,16 @@ function tokenizeCode(content: string): CodeToken[] {
   return tokens;
 }
 
-function HighlightedCode({ content }: { content: string }) {
+function HighlightedCode({
+  content,
+  language,
+}: {
+  content: string;
+  language?: string;
+}) {
   return (
     <>
-      {tokenizeCode(content).map((token, index) =>
+      {tokenizeCode(content, language).map((token, index) =>
         token.kind === "plain" ? (
           <span key={`${token.kind}-${index}`}>{token.value}</span>
         ) : (
@@ -222,7 +361,10 @@ export function RichText({
             key={`${block.kind}-${index}`}
           >
             <code>
-              <HighlightedCode content={block.content} />
+              <HighlightedCode
+                content={block.content}
+                language={block.language}
+              />
             </code>
           </pre>
         ) : (
