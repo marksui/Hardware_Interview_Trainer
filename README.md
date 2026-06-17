@@ -1,10 +1,10 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.16`
+**Current app version:** `v1.2.17`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
-The app combines a 178-question interview bank, a dedicated code-question view, a C++/Python/DSA programming review page, a 375-card Verilog PDF review bank, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
+The app combines a 178-question interview bank, a dedicated code-question view, a HDLBits review map, a C++/Python/DSA programming review page, a 375-card Verilog PDF review bank, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
 
 Related project: [Logic & CMOS Studio](https://marksui.github.io/logic-cmos-studio/) is a companion educational EDA mini-tool for Boolean logic, Karnaugh maps, Verilog export, and static CMOS network visualization.
 
@@ -50,6 +50,12 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
   - Python review cards for containers, collections, sorting, and common pitfalls
   - DSA review cards for DFS, BFS, stack, queue/deque, graph representation, complexity, and edge cases
   - Syntax-colored C++ and Python snippets in review examples
+
+- **HDLBits Review**
+  - Reference-nav review map indexed from HDLBits
+  - 20 review sections and 182 original exercise links
+  - Original study notes with focus points and common pitfalls
+  - Keeps full exercise statements on HDLBits while linking back to the source
 
 - **RTL Design Practice Problems**
   - Footer-linked standalone page
@@ -140,6 +146,9 @@ Browser-only React app
         |-- public/data/verilogInterviewReview.json
         |     Static imported Verilog PDF review bank loaded on demand
         |
+        |-- src/data/hdlbitsReview.ts
+        |     HDLBits topic index with source links and original review notes
+        |
         |-- src/utils/questions.ts
         |     Filtering, category metadata, answer evaluation, shuffling
         |
@@ -187,6 +196,8 @@ Supported question types:
 - `coding`
 
 The imported Verilog PDF review content lives in [`public/data/verilogInterviewReview.json`](public/data/verilogInterviewReview.json). It is kept outside the main bundle and loaded only when the Verilog Interview Review page opens. Each item contains its original number, chapter, section, title, and structured review sections.
+
+The HDLBits review map lives in [`src/data/hdlbitsReview.ts`](src/data/hdlbitsReview.ts). It indexes the HDLBits Problem Sets page into 20 review sections with 182 original exercise links, while keeping full problem statements on HDLBits and using original review notes inside this app.
 
 Local progress export format:
 
@@ -266,6 +277,7 @@ Add generated screenshots here when publishing the project:
 | Question Bank | `docs/screenshots/question-bank.png` |
 | Code Questions | `docs/screenshots/code-questions.png` |
 | Programming Review | `docs/screenshots/programming-review.png` |
+| HDLBits Review | `docs/screenshots/hdlbits-review.png` |
 | Verilog Interview Review | `docs/screenshots/verilog-review.png` |
 | Practice Mode | `docs/screenshots/practice-mode.png` |
 | Mock Interview Mode | `docs/screenshots/mock-interview-mode.png` |
@@ -369,6 +381,13 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.17 - 2026-06-16
+
+- Added a HDLBits Review page with 20 review sections and 182 original HDLBits exercise links.
+- Organized HDLBits content by topic with original study notes, focus points, and common pitfalls instead of copying full exercise statements.
+- Added HDLBits Review entry points in the dashboard, footer, and reference navigation menu.
+- Indexed the HDLBits Problem Sets page into a local review-safe data source with attribution links back to HDLBits.
 
 ### v1.2.16 - 2026-05-28
 

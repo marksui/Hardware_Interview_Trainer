@@ -152,7 +152,8 @@ export function Dashboard({
               </h2>
               <p className="mt-2 text-sm leading-6 text-body">
                 Practice for targeted repetition, inspect RTL coding prompts,
-                review programming concepts, then switch to timed mock rounds.
+                review HDLBits/programming concepts, then switch to timed mock
+                rounds.
               </p>
             </div>
 
@@ -202,6 +203,14 @@ export function Dashboard({
               >
                 <FileCode2 size={17} aria-hidden="true" />
                 Programming Review
+              </button>
+              <button
+                className="button-secondary"
+                onClick={() => navigate("hdlbits-review")}
+                type="button"
+              >
+                <BookOpenCheck size={17} aria-hidden="true" />
+                HDLBits Review
               </button>
               <button
                 className="button-secondary"

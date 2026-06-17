@@ -20,6 +20,7 @@ import { About } from "./pages/About";
 import { Cheatsheet } from "./pages/Cheatsheet";
 import { CodeQuestions } from "./pages/CodeQuestions";
 import { Dashboard } from "./pages/Dashboard";
+import { HdlbitsReview } from "./pages/HdlbitsReview";
 import { MockInterviewMode } from "./pages/MockInterviewMode";
 import { PracticeMode } from "./pages/PracticeMode";
 import { ProgrammingReview } from "./pages/ProgrammingReview";
@@ -48,6 +49,7 @@ type PageId =
   | "mock"
   | "wrong"
   | "cheatsheet"
+  | "hdlbits-review"
   | "about"
   | "rtl-practice"
   | "verilog-review"
@@ -86,6 +88,10 @@ const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
     title: "Cheatsheet",
     subtitle: "Fast refreshers for RTL, DV, CDC, STA, physical design, and EDA algorithms.",
   },
+  "hdlbits-review": {
+    title: "HDLBits Review",
+    subtitle: "Review HDLBits topic coverage with learning points, pitfalls, and links back to the original exercises.",
+  },
   about: {
     title: "About",
     subtitle: "Why this local-first trainer exists and how it supports hardware interview preparation.",
@@ -118,6 +124,7 @@ const primaryNavItems = [
 
 const secondaryNavItems = [
   { id: "cheatsheet", label: "Cheatsheet", icon: ClipboardList },
+  { id: "hdlbits-review", label: "HDLBits", icon: BookOpenCheck },
   { id: "about", label: "About", icon: Info },
   { id: "versions", label: "Versions", icon: History },
 ] satisfies NavItem[];
@@ -236,6 +243,8 @@ export default function App() {
         );
       case "cheatsheet":
         return <Cheatsheet />;
+      case "hdlbits-review":
+        return <HdlbitsReview />;
       case "about":
         return <About />;
       case "rtl-practice":
@@ -379,8 +388,8 @@ export default function App() {
                 })}
               </div>
 
-              <div className="grid gap-2 sm:grid-cols-3 lg:col-start-2 lg:min-w-[430px]">
-                <p className="px-3 text-xs font-semibold uppercase tracking-normal text-muted sm:col-span-3">
+              <div className="grid gap-2 sm:grid-cols-4 lg:col-start-2 lg:min-w-[520px]">
+                <p className="px-3 text-xs font-semibold uppercase tracking-normal text-muted sm:col-span-4">
                   Reference
                 </p>
                 {secondaryNavItems.map((item) => {
@@ -490,6 +499,9 @@ export default function App() {
                 </button>
                 <button className="text-left text-on-dark-soft" onClick={() => navigate("cheatsheet")} type="button">
                   Cheatsheet
+                </button>
+                <button className="text-left text-on-dark-soft" onClick={() => navigate("hdlbits-review")} type="button">
+                  HDLBits Review
                 </button>
                 <button className="text-left text-on-dark-soft" onClick={() => navigate("about")} type="button">
                   About

@@ -1,8 +1,19 @@
-export const APP_VERSION = "1.2.16";
+export const APP_VERSION = "1.2.17";
 
-export const RELEASE_DATE = "2026-05-28";
+export const RELEASE_DATE = "2026-06-16";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.17",
+    date: "2026-06-16",
+    title: "HDLBits review map",
+    changes: [
+      "Added a HDLBits Review page with 20 review sections and 182 original HDLBits exercise links.",
+      "Organized HDLBits content by topic with original study notes, focus points, and common pitfalls instead of copying full exercise statements.",
+      "Added HDLBits Review entry points in the dashboard, footer, and reference navigation menu.",
+      "Indexed the HDLBits Problem_sets page into a local review-safe data source with attribution links back to HDLBits.",
+    ],
+  },
   {
     version: "1.2.16",
     date: "2026-05-28",
