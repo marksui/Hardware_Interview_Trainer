@@ -53,8 +53,8 @@ type PageId =
 
 const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
   dashboard: {
-    title: "Dashboard",
-    subtitle: "Track question coverage and jump into focused interview prep.",
+    title: "Home",
+    subtitle: "Choose a review, practice, or mock flow without digging through the app.",
   },
   bank: {
     title: "Question Bank",
@@ -105,15 +105,15 @@ const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
 type NavItem = { id: PageId; label: string; icon: typeof Gauge };
 
 const primaryNavItems = [
-  { id: "dashboard", label: "Dashboard", icon: Gauge },
-  { id: "bank", label: "Bank", icon: LibraryBig },
+  { id: "dashboard", label: "Home", icon: Gauge },
+  { id: "practice", label: "Practice", icon: BrainCircuit },
   { id: "code", label: "Code", icon: Code2 },
   { id: "programming-review", label: "Review", icon: FileCode2 },
-  { id: "practice", label: "Practice", icon: BrainCircuit },
   { id: "mock", label: "Mock", icon: Timer },
 ] satisfies NavItem[];
 
 const secondaryNavItems = [
+  { id: "bank", label: "Bank", icon: LibraryBig },
   { id: "cheatsheet", label: "Cheatsheet", icon: ClipboardList },
   { id: "hdlbits-review", label: "HDLBits", icon: BookOpenCheck },
   { id: "rtl-practice", label: "RTL Practice", icon: Code2 },
@@ -152,11 +152,17 @@ export default function App() {
 
   const navigate = (nextPage: PageId | string) => {
     const resolvedPage = navItems.find((item) => item.id === nextPage)?.id ?? "dashboard";
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
 
     window.location.hash = resolvedPage;
     setPage(resolvedPage);
     setMenuOpen(false);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    window.scrollTo({
+      top: 0,
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    });
   };
 
   useEffect(() => {
@@ -353,8 +359,8 @@ export default function App() {
                 })}
               </div>
 
-              <div className="grid gap-2 sm:grid-cols-3 lg:col-start-2 lg:min-w-[760px] lg:grid-cols-6">
-                <p className="px-3 text-xs font-semibold uppercase tracking-normal text-muted sm:col-span-3 lg:col-span-6">
+              <div className="grid gap-2 sm:grid-cols-3 lg:col-start-2 lg:min-w-[700px] lg:grid-cols-4">
+                <p className="px-3 text-xs font-semibold uppercase tracking-normal text-muted sm:col-span-3 lg:col-span-4">
                   Reference
                 </p>
                 {secondaryNavItems.map((item) => {

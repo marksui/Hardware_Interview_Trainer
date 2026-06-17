@@ -1,6 +1,6 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.18`
+**Current app version:** `v1.2.19`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
@@ -23,13 +23,14 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
 ## Features
 
 - **Dashboard**
-  - Start workspace for practice, code prompts, and mock interviews
+  - Home workspace with a 1-2-3 review, practice, mock flow
   - Compact metrics for question bank size, attempts, and accuracy
-  - Review-library shortcuts for programming, HDLBits, RTL drills, Verilog, and cheatsheet pages
+  - Review-library shortcuts for programming, code prompts, HDLBits, RTL drills, Verilog, and cheatsheet pages
   - Category coverage and local progress focus
   - Progress export/import
 
 - **Question Bank**
+  - Reference-menu page for the full interview bank
   - Searchable and filterable table
   - Filters for category, difficulty, and question type
   - Full question details with answer, explanation, oral answer, and tags
@@ -55,12 +56,12 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
   - Keeps full exercise statements on HDLBits while linking back to the source
 
 - **RTL Design Practice Problems**
-  - Footer-linked standalone page
+  - Reference-linked standalone page
   - 26 RTL design drills including the NVIDIA SRAM memory-controller phone-screen prompt
   - Answer-style design notes plus syntax-colored reference RTL/code blocks
 
 - **Verilog Interview Review**
-  - Footer-linked standalone page
+  - Reference-linked standalone page
   - 375 review cards imported from `Verilog面试题.pdf`
   - Chapter filtering and keyword search
   - Structured sections for 解读, 知识点, 答案, and 拓展思考
@@ -114,8 +115,10 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
 
 - **UI**
   - Responsive modern SaaS-inspired layout
+  - Simplified primary navigation for Home, Practice, Code, Review, and Mock
   - Light and dark mode
   - GitHub Pages-compatible hash navigation
+  - Reduced-motion handling for users who prefer less animation
 
 ## Tech Stack
 
@@ -371,6 +374,13 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.19 - 2026-06-17
+
+- Simplified the primary navigation to Home, Practice, Code, Review, and Mock so the main workflow is easier to scan.
+- Moved the question bank into the Reference menu and kept review resources grouped together.
+- Updated the dashboard start panel into a 1-2-3 review, practice, mock flow.
+- Added reduced-motion handling for smoother accessibility behavior.
 
 ### v1.2.18 - 2026-06-16
 

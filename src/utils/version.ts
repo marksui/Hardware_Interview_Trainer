@@ -1,8 +1,19 @@
-export const APP_VERSION = "1.2.18";
+export const APP_VERSION = "1.2.19";
 
-export const RELEASE_DATE = "2026-06-16";
+export const RELEASE_DATE = "2026-06-17";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.19",
+    date: "2026-06-17",
+    title: "Simpler study navigation",
+    changes: [
+      "Simplified the primary navigation to Home, Practice, Code, Review, and Mock so the main workflow is easier to scan.",
+      "Moved the question bank into the Reference menu and kept review resources grouped together.",
+      "Updated the dashboard start panel into a 1-2-3 review, practice, mock flow.",
+      "Added reduced-motion handling for smoother accessibility behavior.",
+    ],
+  },
   {
     version: "1.2.18",
     date: "2026-06-16",

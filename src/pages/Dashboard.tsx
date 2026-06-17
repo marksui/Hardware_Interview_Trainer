@@ -187,12 +187,11 @@ export function Dashboard({
             Local interview prep
           </span>
           <h2 className="display-heading mt-5 text-4xl leading-tight">
-            Pick a lane and keep moving.
+            Start with the right mode.
           </h2>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-body">
-            Start with a focused practice set, inspect code-heavy prompts, or
-            switch into a timed mock. Review pages stay close by for quick
-            refreshes before you answer.
+            Use one simple prep loop: review the idea, practice the question,
+            then run a mock when the topic feels warm.
           </p>
 
           <div className="mt-6 grid gap-3 sm:grid-cols-3">
@@ -203,7 +202,7 @@ export function Dashboard({
               value={questions.length}
             />
             <Metric
-              detail="Answered in practice, mock, and retry flows"
+              detail="Answered in practice and mock flows"
               icon={BarChart3}
               label="Attempts"
               value={analytics.totalAttempted}
@@ -221,31 +220,31 @@ export function Dashboard({
           <div className="border-b border-hairline bg-canvas px-5 py-4">
             <p className="text-sm font-semibold text-primary">Start here</p>
             <p className="mt-1 text-xs leading-5 text-body">
-              The three main loops are now grouped in one place.
+              Recommended order for a normal prep session.
             </p>
           </div>
           <div className="divide-y divide-hairline">
             <ActionRow
-              description="Pick category and difficulty, then get immediate feedback."
-              icon={Play}
-              label="Start"
-              onClick={() => navigate("practice")}
-              primary
-              title="Practice set"
+              description="Refresh concepts, HDLBits topics, or likely coding-interview asks."
+              icon={FileCode2}
+              label="1"
+              onClick={() => navigate("programming-review")}
+              title="Review first"
             />
             <ActionRow
-              description="Browse RTL coding prompts with reference implementations."
-              icon={Code2}
-              label="View"
-              onClick={() => navigate("code")}
-              title="Code questions"
+              description="Pick one topic and get immediate feedback after each answer."
+              icon={Play}
+              label="2"
+              onClick={() => navigate("practice")}
+              primary
+              title="Practice next"
             />
             <ActionRow
               description="Run a timed round, flashcards, or the NVIDIA preset."
               icon={Layers3}
-              label="Run"
+              label="3"
               onClick={() => navigate("mock")}
-              title="Mock interview"
+              title="Mock last"
             />
           </div>
         </div>
@@ -259,7 +258,7 @@ export function Dashboard({
             </h2>
             <p className="mt-1 text-sm leading-6 text-body">
               Reference material is grouped by how you actually study: concepts,
-              HDLBits, RTL design, Verilog review, and quick sheets.
+              code prompts, HDLBits, RTL design, Verilog review, and quick sheets.
             </p>
           </div>
           <button
@@ -271,13 +270,20 @@ export function Dashboard({
             Open Bank
           </button>
         </div>
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           <ResourceTile
             description="C++, Python, DFS/BFS, stack, queue, graph, and complexity notes."
             icon={FileCode2}
             meta="programming"
             onClick={() => navigate("programming-review")}
             title="Programming"
+          />
+          <ResourceTile
+            description="LeetCode-style split view for RTL coding prompts and solutions."
+            icon={Code2}
+            meta="code view"
+            onClick={() => navigate("code")}
+            title="Code Questions"
           />
           <ResourceTile
             description="20 topic sections and 182 original HDLBits exercise links."
