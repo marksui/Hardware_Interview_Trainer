@@ -8,7 +8,7 @@ import type {
 } from "../types";
 import { APP_VERSION } from "./version";
 
-const WRONG_QUESTIONS_KEY = "hardwareInterviewTrainer.wrongQuestions";
+const REVIEW_ITEMS_KEY = "hardwareInterviewTrainer.wrongQuestions";
 const ANALYTICS_KEY = "hardwareInterviewTrainer.analytics";
 const THEME_KEY = "hardwareInterviewTrainer.theme";
 
@@ -106,24 +106,13 @@ function writeAnalytics(analytics: AnalyticsState) {
   window.localStorage.setItem(ANALYTICS_KEY, JSON.stringify(analytics));
 }
 
-export function getWrongQuestionIds() {
-  return readStringArray(WRONG_QUESTIONS_KEY);
+export function getReviewItemIds() {
+  return readStringArray(REVIEW_ITEMS_KEY);
 }
 
-export function addWrongQuestion(id: string) {
-  const wrongQuestionIds = getWrongQuestionIds();
-  writeStringArray(WRONG_QUESTIONS_KEY, [...wrongQuestionIds, id]);
-}
-
-export function removeWrongQuestion(id: string) {
-  writeStringArray(
-    WRONG_QUESTIONS_KEY,
-    getWrongQuestionIds().filter((questionId) => questionId !== id),
-  );
-}
-
-export function clearWrongQuestions() {
-  writeStringArray(WRONG_QUESTIONS_KEY, []);
+export function addReviewItem(id: string) {
+  const reviewItemIds = getReviewItemIds();
+  writeStringArray(REVIEW_ITEMS_KEY, [...reviewItemIds, id]);
 }
 
 export function getAnalytics() {
@@ -193,7 +182,7 @@ export function getProgressExport(): ProgressExport {
     version: 1,
     appVersion: APP_VERSION,
     exportedAt: new Date().toISOString(),
-    wrongQuestions: getWrongQuestionIds(),
+    reviewItems: getReviewItemIds(),
     analytics: getAnalytics(),
     theme: getThemePreference(),
   };
@@ -205,13 +194,16 @@ export function importProgress(value: unknown) {
   }
 
   const progress = value as Partial<ProgressExport>;
-  const wrongQuestions = Array.isArray(progress.wrongQuestions)
-    ? progress.wrongQuestions.filter(
+  const reviewItemsSource = Array.isArray(progress.reviewItems)
+    ? progress.reviewItems
+    : progress.wrongQuestions;
+  const reviewItems = Array.isArray(reviewItemsSource)
+    ? reviewItemsSource.filter(
         (questionId): questionId is string => typeof questionId === "string",
       )
     : [];
 
-  writeStringArray(WRONG_QUESTIONS_KEY, wrongQuestions);
+  writeStringArray(REVIEW_ITEMS_KEY, reviewItems);
   writeAnalytics(sanitizeAnalytics(progress.analytics));
 
   if (progress.theme === "dark" || progress.theme === "light") {

@@ -1,10 +1,10 @@
 # Hardware Interview Trainer
 
-**Current app version:** `v1.2.17`
+**Current app version:** `v1.2.18`
 
 Hardware Interview Trainer is a GitHub Pages-ready web app for ECE and computer engineering students preparing for hardware, SoC, physical design, and EDA software interviews.
 
-The app combines a 178-question interview bank, a dedicated code-question view, a HDLBits review map, a C++/Python/DSA programming review page, a 375-card Verilog PDF review bank, targeted practice, timed mock rounds, wrong-question review, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
+The app combines a 178-question interview bank, a dedicated code-question view, a HDLBits review map, a C++/Python/DSA programming review page, a 375-card Verilog PDF review bank, targeted practice, timed mock rounds, saved review items, local progress analytics, JSON progress import/export, dark mode, and a compact cheatsheet. It intentionally uses no backend so it can be inspected, forked, deployed, and extended as a clean portfolio project.
 
 Related project: [Logic & CMOS Studio](https://marksui.github.io/logic-cmos-studio/) is a companion educational EDA mini-tool for Boolean logic, Karnaugh maps, Verilog export, and static CMOS network visualization.
 
@@ -16,20 +16,17 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
 
 - Structured questions by topic, difficulty, and answer type
 - Immediate explanations and interview-style oral answers
-- A wrong-question queue for spaced review
+- Saved review items for questions that need another pass
 - Local accuracy analytics to expose weak areas
 - Static hosting that works on GitHub Pages
 
 ## Features
 
 - **Dashboard**
-  - Total question count
-  - Wrong-question count
-  - Total attempted questions
-  - Category coverage
-  - Category accuracy
-  - Difficulty accuracy
-  - Most missed category
+  - Start workspace for practice, code prompts, and mock interviews
+  - Compact metrics for question bank size, attempts, and accuracy
+  - Review-library shortcuts for programming, HDLBits, RTL drills, Verilog, and cheatsheet pages
+  - Category coverage and local progress focus
   - Progress export/import
 
 - **Question Bank**
@@ -75,7 +72,7 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
   - Single-choice, multi-select, short-answer, and coding support
   - Immediate feedback after submission
   - Self-review suggested answers for open-ended and coding prompts
-  - Wrong answers or manually saved review items stored in LocalStorage
+  - Responses that need another pass can be saved as local review items
 
 - **Mock Interview Mode**
   - Random 10-question round
@@ -86,12 +83,7 @@ Most study workflows are scattered across notes, PDFs, spreadsheets, and random 
   - Timer
   - Score summary
   - Weak-category report
-  - Wrong answers saved for review
-
-- **Wrong Questions**
-  - Loads missed question IDs from LocalStorage
-  - Retry flow
-  - Remove questions after review
+  - Responses that need another pass are saved as local review items
 
 - **Cheatsheet**
   - RTL basics
@@ -153,10 +145,10 @@ Browser-only React app
         |     Filtering, category metadata, answer evaluation, shuffling
         |
         |-- src/utils/storage.ts
-        |     Wrong-question IDs, analytics aggregates, theme, import/export
+        |     Saved review IDs, analytics aggregates, theme, import/export
         |
         |-- src/pages/*
-        |     Dashboard, bank, practice, mock, wrong questions, cheatsheet, about
+        |     Dashboard, bank, practice, mock, review pages, cheatsheet, about
         |
         |-- LocalStorage
               User progress stays private in the browser
@@ -207,7 +199,7 @@ Local progress export format:
   "version": 1,
   "appVersion": "1.2.15",
   "exportedAt": "2026-05-13T00:00:00.000Z",
-  "wrongQuestions": ["rtl-001", "sta-004"],
+  "reviewItems": ["rtl-001", "sta-004"],
   "analytics": {
     "totalAttempted": 12,
     "totalCorrect": 8,
@@ -251,7 +243,6 @@ Local progress export format:
 │   │   ├── PracticeMode.tsx
 │   │   ├── QuestionBank.tsx
 │   │   ├── VerilogInterviewReview.tsx
-│   │   └── WrongQuestions.tsx
 │   ├── utils
 │   │   ├── questions.ts
 │   │   ├── storage.ts
@@ -281,7 +272,6 @@ Add generated screenshots here when publishing the project:
 | Verilog Interview Review | `docs/screenshots/verilog-review.png` |
 | Practice Mode | `docs/screenshots/practice-mode.png` |
 | Mock Interview Mode | `docs/screenshots/mock-interview-mode.png` |
-| Wrong Questions | `docs/screenshots/wrong-questions.png` |
 | Cheatsheet | `docs/screenshots/cheatsheet.png` |
 | About | `docs/screenshots/about.png` |
 | Dark Mode | `docs/screenshots/dark-mode.png` |
@@ -381,6 +371,13 @@ Hardware Interview Trainer does not track users.
 ## Version History
 
 The app also renders this changelog on a dedicated Version History page so reviewers can see project progress directly inside the UI without crowding the footer.
+
+### v1.2.18 - 2026-06-16
+
+- Redesigned the dashboard into a clearer start workspace with grouped practice, code, mock, and review-library actions.
+- Removed the standalone saved-miss navigation/page design and replaced visible wording with neutral saved review items.
+- Promoted RTL Practice and Verilog Review into the Reference menu so review resources are easier to reach.
+- Removed accidental local verification artifacts from the repository.
 
 ### v1.2.17 - 2026-06-16
 

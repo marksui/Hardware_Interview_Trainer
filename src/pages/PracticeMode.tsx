@@ -11,12 +11,12 @@ import {
   isSelfReviewedQuestion,
   shuffleQuestions,
 } from "../utils/questions";
-import { addWrongQuestion, recordAttempt, recordSelfReviewMiss } from "../utils/storage";
+import { addReviewItem, recordAttempt, recordSelfReviewMiss } from "../utils/storage";
 
 export function PracticeMode({
-  onWrongChanged,
+  onReviewItemsChanged,
 }: {
-  onWrongChanged: () => void;
+  onReviewItemsChanged: () => void;
 }) {
   const [category, setCategory] = useState(categories[0] ?? "");
   const [difficulty, setDifficulty] = useState<Difficulty>("easy");
@@ -46,10 +46,10 @@ export function PracticeMode({
     recordAttempt(result);
 
     if (result.isCorrect === false) {
-      addWrongQuestion(result.question.id);
+      addReviewItem(result.question.id);
     }
 
-    onWrongChanged();
+    onReviewItemsChanged();
   };
 
   const handleSaveForReview = (result: AnswerResult) => {
@@ -57,9 +57,9 @@ export function PracticeMode({
       return;
     }
 
-    addWrongQuestion(result.question.id);
+    addReviewItem(result.question.id);
     recordSelfReviewMiss(result);
-    onWrongChanged();
+    onReviewItemsChanged();
   };
 
   const nextQuestion = () => {
@@ -144,7 +144,7 @@ export function PracticeMode({
             <p className="mt-2 max-w-2xl text-sm leading-6 text-body">
               Practice mode shows feedback immediately, including the correct
               answer, explanation, and a concise interview-style oral answer.
-              Wrong answers are saved for review.
+              Responses that need another pass are kept as local review items.
             </p>
           </div>
         ) : null}

@@ -4,7 +4,6 @@ import {
   CheckSquare,
   Circle,
   Square,
-  TriangleAlert,
   XCircle,
 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -256,13 +255,13 @@ export function QuestionAttempt({
             </div>
             {result.isCorrect === null && onSaveForReview ? (
               <button
-                className="button-secondary w-fit border-rose-100 bg-rose-50 text-ink-950"
+                className="button-secondary w-fit"
                 disabled={savedForReview}
                 onClick={handleSaveForReview}
                 type="button"
               >
-                <TriangleAlert size={16} aria-hidden="true" />
-                {savedForReview ? "Saved to Wrong Questions" : "Save to Wrong Questions"}
+                <BookOpenCheck size={16} aria-hidden="true" />
+                {savedForReview ? "Saved for Review" : "Save for Review"}
               </button>
             ) : null}
           </div>

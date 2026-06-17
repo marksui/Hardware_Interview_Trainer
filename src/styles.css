@@ -57,6 +57,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
+  overflow-x: hidden;
 }
 
 button,
@@ -84,12 +85,14 @@ textarea:focus-visible {
   }
 
   .panel {
+    min-width: 0;
     border-radius: 12px;
     background: rgb(var(--color-surface-card));
     box-shadow: none;
   }
 
   .product-panel {
+    min-width: 0;
     border: 1px solid #e5e7eb;
     border-color: rgb(var(--color-hairline));
     border-radius: 12px;

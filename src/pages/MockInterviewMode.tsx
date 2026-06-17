@@ -8,7 +8,6 @@ import {
   Search,
   SlidersHorizontal,
   Trophy,
-  TriangleAlert,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { CategoryBadge, DifficultyBadge, TypeBadge } from "../components/Badge";
@@ -27,7 +26,7 @@ import {
   questions,
   shuffleQuestions,
 } from "../utils/questions";
-import { addWrongQuestion, recordAttempt, recordSelfReviewMiss } from "../utils/storage";
+import { addReviewItem, recordAttempt, recordSelfReviewMiss } from "../utils/storage";
 
 const MOCK_QUESTION_COUNT = 10;
 const MOCK_DURATION_SECONDS = 15 * 60;
@@ -76,9 +75,9 @@ function resolvePresetQuestions(preset: MockPreset) {
 }
 
 export function MockInterviewMode({
-  onWrongChanged,
+  onReviewItemsChanged,
 }: {
-  onWrongChanged: () => void;
+  onReviewItemsChanged: () => void;
 }) {
   const [sessionId, setSessionId] = useState(0);
   const [mockQuestions, setMockQuestions] = useState<Question[]>([]);
@@ -139,11 +138,11 @@ export function MockInterviewMode({
         const answer = answerState[question.id];
 
         if (!answer || answer.isCorrect === false) {
-          addWrongQuestion(question.id);
+          addReviewItem(question.id);
         }
       });
     }
-    onWrongChanged();
+    onReviewItemsChanged();
     setIsActive(false);
     setIsFinished(true);
   };
@@ -195,10 +194,10 @@ export function MockInterviewMode({
     recordAttempt(result);
 
     if (result.isCorrect === false) {
-      addWrongQuestion(result.question.id);
+      addReviewItem(result.question.id);
     }
 
-    onWrongChanged();
+    onReviewItemsChanged();
   };
 
   const toggleQuestionSelection = (id: string) => {
@@ -214,10 +213,10 @@ export function MockInterviewMode({
       return;
     }
 
-    addWrongQuestion(result.question.id);
+    addReviewItem(result.question.id);
     recordSelfReviewMiss(result);
     setSavedReviewIds((ids) => [...ids, result.question.id]);
-    onWrongChanged();
+    onReviewItemsChanged();
   };
 
   const advance = () => {
@@ -289,7 +288,7 @@ export function MockInterviewMode({
         <section className="grid gap-5 lg:grid-cols-[320px_1fr]">
           <div className="panel h-fit p-6">
             <h3 className="display-heading text-[28px] leading-tight">
-              {isFlashcardMode ? "Review coverage" : "Weak categories"}
+              {isFlashcardMode ? "Review coverage" : "Focus categories"}
             </h3>
             <div className="mt-4 space-y-3">
               {summaryItems.length ? (
@@ -311,7 +310,7 @@ export function MockInterviewMode({
                 ))
               ) : (
                 <p className="text-sm leading-6 text-body">
-                  No weak categories this round.
+                  No focus categories this round.
                 </p>
               )}
             </div>
@@ -370,15 +369,15 @@ export function MockInterviewMode({
                   </div>
                   {isSelfReview && !isFlashcardMode ? (
                     <button
-                      className="button-secondary mt-3 border-rose-100 bg-rose-50 px-3 py-2 text-ink-950"
+                      className="button-secondary mt-3 px-3 py-2"
                       disabled={savedReviewIds.includes(question.id)}
                       onClick={() => handleSaveSelfReview(result)}
                       type="button"
                     >
-                      <TriangleAlert size={16} aria-hidden="true" />
+                      <BookOpenCheck size={16} aria-hidden="true" />
                       {savedReviewIds.includes(question.id)
-                        ? "Saved to Wrong Questions"
-                        : "Save to Wrong Questions"}
+                        ? "Saved for Review"
+                        : "Save for Review"}
                     </button>
                   ) : null}
                 </div>

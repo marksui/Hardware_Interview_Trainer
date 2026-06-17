@@ -1,13 +1,14 @@
 import {
-  AlertTriangle,
   BarChart3,
   BookOpenCheck,
   BrainCircuit,
+  ClipboardList,
   Code2,
   Download,
   FileCode2,
   FileJson,
   Layers3,
+  LibraryBig,
   Play,
   Target,
   Upload,
@@ -18,7 +19,34 @@ import { ProgressBar } from "../components/ProgressBar";
 import type { AnalyticsBucket, AnalyticsState } from "../types";
 import { categories, categoryCounts, questions } from "../utils/questions";
 
-function StatCard({
+type DashboardPage =
+  | "bank"
+  | "code"
+  | "programming-review"
+  | "practice"
+  | "mock"
+  | "cheatsheet"
+  | "hdlbits-review"
+  | "rtl-practice"
+  | "verilog-review";
+
+function accuracy(bucket?: AnalyticsBucket) {
+  if (!bucket || bucket.attempted === 0) {
+    return 0;
+  }
+
+  return Math.round((bucket.correct / bucket.attempted) * 100);
+}
+
+function highestFocusArea(analytics: AnalyticsState) {
+  return (
+    Object.entries(analytics.byCategory).sort(
+      ([, leftBucket], [, rightBucket]) => rightBucket.missed - leftBucket.missed,
+    )[0]?.[0] ?? "No focus area yet"
+  );
+}
+
+function Metric({
   label,
   value,
   detail,
@@ -30,51 +58,115 @@ function StatCard({
   icon: typeof BookOpenCheck;
 }) {
   return (
-    <div className="panel p-6">
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-muted">{label}</p>
-          <p className="display-heading mt-2 text-4xl">
-            {value}
-          </p>
-        </div>
-        <div className="flex h-11 w-11 items-center justify-center rounded-full bg-canvas text-primary">
-          <Icon size={22} aria-hidden="true" />
-        </div>
+    <div className="rounded-md border border-hairline bg-canvas px-4 py-4">
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-xs font-semibold uppercase tracking-normal text-muted">
+          {label}
+        </p>
+        <Icon size={17} aria-hidden="true" />
       </div>
-      <p className="mt-4 text-sm leading-6 text-body">{detail}</p>
+      <p className="display-heading mt-3 text-3xl leading-tight">{value}</p>
+      <p className="mt-2 text-xs leading-5 text-body">{detail}</p>
     </div>
   );
 }
 
-function accuracy(bucket?: AnalyticsBucket) {
-  if (!bucket || bucket.attempted === 0) {
-    return 0;
-  }
-
-  return Math.round((bucket.correct / bucket.attempted) * 100);
+function ActionRow({
+  title,
+  description,
+  label,
+  icon: Icon,
+  primary = false,
+  onClick,
+}: {
+  title: string;
+  description: string;
+  label: string;
+  icon: typeof BookOpenCheck;
+  primary?: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      className={`flex w-full items-start justify-between gap-4 px-5 py-4 text-left transition hover:bg-surface-soft ${
+        primary ? "bg-surface-soft" : "bg-canvas"
+      }`}
+      onClick={onClick}
+      type="button"
+    >
+      <span className="flex min-w-0 gap-3">
+        <span
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-md ${
+            primary ? "bg-action text-on-action" : "bg-surface-card text-primary"
+          }`}
+        >
+          <Icon size={19} aria-hidden="true" />
+        </span>
+        <span className="min-w-0">
+          <span className="block text-sm font-semibold text-primary">{title}</span>
+          <span className="mt-1 block text-xs leading-5 text-body">
+            {description}
+          </span>
+        </span>
+      </span>
+      <span
+        className={`shrink-0 rounded-md px-3 py-2 text-xs font-semibold ${
+          primary ? "bg-action text-on-action" : "bg-surface-soft text-primary"
+        }`}
+      >
+        {label}
+      </span>
+    </button>
+  );
 }
 
-function mostMissedCategory(analytics: AnalyticsState) {
+function ResourceTile({
+  title,
+  description,
+  meta,
+  icon: Icon,
+  onClick,
+}: {
+  title: string;
+  description: string;
+  meta: string;
+  icon: typeof BookOpenCheck;
+  onClick: () => void;
+}) {
   return (
-    Object.entries(analytics.byCategory).sort(
-      ([, leftBucket], [, rightBucket]) => rightBucket.missed - leftBucket.missed,
-    )[0]?.[0] ?? "No misses yet"
+    <button
+      className="product-panel flex h-full min-h-40 flex-col justify-between p-5 text-left transition hover:bg-surface-soft"
+      onClick={onClick}
+      type="button"
+    >
+      <span>
+        <span className="flex h-10 w-10 items-center justify-center rounded-md bg-surface-card text-primary">
+          <Icon size={19} aria-hidden="true" />
+        </span>
+        <span className="mt-4 block text-base font-semibold text-primary">
+          {title}
+        </span>
+        <span className="mt-2 block text-sm leading-6 text-body">
+          {description}
+        </span>
+      </span>
+      <span className="mt-4 font-code text-xs font-semibold text-muted">
+        {meta}
+      </span>
+    </button>
   );
 }
 
 export function Dashboard({
-  wrongCount,
   analytics,
   importStatus,
   navigate,
   onExportProgress,
   onImportProgress,
 }: {
-  wrongCount: number;
   analytics: AnalyticsState;
   importStatus?: string;
-  navigate: (page: string) => void;
+  navigate: (page: DashboardPage | string) => void;
   onExportProgress: () => void;
   onImportProgress: (file: File) => void;
 }) {
@@ -85,48 +177,159 @@ export function Dashboard({
     correct: analytics.totalCorrect,
     missed: analytics.totalMissed,
   });
-  const missedCategory = mostMissedCategory(analytics);
+  const focusArea = highestFocusArea(analytics);
 
   return (
-    <div className="space-y-8">
-      <section className="grid gap-6 md:grid-cols-3">
-        <StatCard
-          detail={`${categories.length} focused categories across RTL, DV, timing, and physical implementation.`}
-          icon={BookOpenCheck}
-          label="Question bank"
-          value={questions.length}
-        />
-        <StatCard
-          detail="Saved automatically when practice or mock answers miss the mark."
-          icon={AlertTriangle}
-          label="Wrong questions"
-          value={wrongCount}
-        />
-        <StatCard
-          detail={`${overallAccuracy}% overall accuracy across all answered practice, mock, and retry prompts.`}
-          icon={BarChart3}
-          label="Attempted"
-          value={analytics.totalAttempted}
-        />
+    <div className="space-y-6">
+      <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_390px]">
+        <div className="panel p-6 sm:p-8">
+          <span className="badge-pill bg-surface-soft text-primary">
+            Local interview prep
+          </span>
+          <h2 className="display-heading mt-5 text-4xl leading-tight">
+            Pick a lane and keep moving.
+          </h2>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-body">
+            Start with a focused practice set, inspect code-heavy prompts, or
+            switch into a timed mock. Review pages stay close by for quick
+            refreshes before you answer.
+          </p>
+
+          <div className="mt-6 grid gap-3 sm:grid-cols-3">
+            <Metric
+              detail={`${categories.length} hardware interview categories`}
+              icon={BookOpenCheck}
+              label="Bank"
+              value={questions.length}
+            />
+            <Metric
+              detail="Answered in practice, mock, and retry flows"
+              icon={BarChart3}
+              label="Attempts"
+              value={analytics.totalAttempted}
+            />
+            <Metric
+              detail={`${analytics.totalMissed} responses marked for review`}
+              icon={Target}
+              label="Accuracy"
+              value={`${overallAccuracy}%`}
+            />
+          </div>
+        </div>
+
+        <div className="product-panel overflow-hidden">
+          <div className="border-b border-hairline bg-canvas px-5 py-4">
+            <p className="text-sm font-semibold text-primary">Start here</p>
+            <p className="mt-1 text-xs leading-5 text-body">
+              The three main loops are now grouped in one place.
+            </p>
+          </div>
+          <div className="divide-y divide-hairline">
+            <ActionRow
+              description="Pick category and difficulty, then get immediate feedback."
+              icon={Play}
+              label="Start"
+              onClick={() => navigate("practice")}
+              primary
+              title="Practice set"
+            />
+            <ActionRow
+              description="Browse RTL coding prompts with reference implementations."
+              icon={Code2}
+              label="View"
+              onClick={() => navigate("code")}
+              title="Code questions"
+            />
+            <ActionRow
+              description="Run a timed round, flashcards, or the NVIDIA preset."
+              icon={Layers3}
+              label="Run"
+              onClick={() => navigate("mock")}
+              title="Mock interview"
+            />
+          </div>
+        </div>
       </section>
 
-      <section className="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
-        <div className="panel p-6">
+      <section>
+        <div className="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="display-heading text-[28px] leading-tight">
+              Review library
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-body">
+              Reference material is grouped by how you actually study: concepts,
+              HDLBits, RTL design, Verilog review, and quick sheets.
+            </p>
+          </div>
+          <button
+            className="button-secondary w-fit px-3 py-2"
+            onClick={() => navigate("bank")}
+            type="button"
+          >
+            <LibraryBig size={16} aria-hidden="true" />
+            Open Bank
+          </button>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
+          <ResourceTile
+            description="C++, Python, DFS/BFS, stack, queue, graph, and complexity notes."
+            icon={FileCode2}
+            meta="programming"
+            onClick={() => navigate("programming-review")}
+            title="Programming"
+          />
+          <ResourceTile
+            description="20 topic sections and 182 original HDLBits exercise links."
+            icon={BookOpenCheck}
+            meta="HDLBits"
+            onClick={() => navigate("hdlbits-review")}
+            title="HDLBits"
+          />
+          <ResourceTile
+            description="RTL design drills with answer notes and reference code."
+            icon={BrainCircuit}
+            meta="RTL drills"
+            onClick={() => navigate("rtl-practice")}
+            title="RTL Practice"
+          />
+          <ResourceTile
+            description="Searchable Verilog interview cards imported from the local PDF."
+            icon={ClipboardList}
+            meta="375 cards"
+            onClick={() => navigate("verilog-review")}
+            title="Verilog"
+          />
+          <ResourceTile
+            description="Fast refreshers for RTL, DV, CDC, STA, PD, and EDA algorithms."
+            icon={FileCode2}
+            meta="cheatsheet"
+            onClick={() => navigate("cheatsheet")}
+            title="Cheatsheet"
+          />
+        </div>
+      </section>
+
+      <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_370px]">
+        <div className="product-panel p-5">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h2 className="display-heading text-[28px] leading-tight">
                 Category coverage
               </h2>
               <p className="mt-2 text-sm text-body">
-                The seed bank starts broad, and the physical-design pack adds deeper
-                timing, routing, and signoff coverage.
+                Coverage stays scan-friendly so weak hardware areas are easy to
+                spot before a mock round.
               </p>
             </div>
             <CategoryBadge category="GitHub Pages ready" />
           </div>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
+          <div className="mt-5 grid gap-3 md:grid-cols-2">
             {categoryCounts.map((item) => (
-              <div key={item.category} className="product-panel p-4">
+              <div
+                className="rounded-md border border-hairline bg-canvas p-4"
+                key={item.category}
+              >
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <span className="text-sm font-semibold text-primary">
                     {item.category}
@@ -141,199 +344,52 @@ export function Dashboard({
           </div>
         </div>
 
-        <div className="panel p-6">
-          <div className="flex h-full flex-col">
-            <div>
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-canvas text-primary">
-                <BrainCircuit size={22} aria-hidden="true" />
-              </div>
-              <h2 className="display-heading mt-4 text-[28px] leading-tight">
-                Start training
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-body">
-                Practice for targeted repetition, inspect RTL coding prompts,
-                review HDLBits/programming concepts, then switch to timed mock
-                rounds.
-              </p>
+        <div className="grid gap-5">
+          <div className="product-panel p-5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-surface-card text-primary">
+              <Target size={19} aria-hidden="true" />
             </div>
+            <h2 className="display-heading mt-4 text-[24px] leading-tight">
+              Progress focus
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-body">
+              Accuracy is computed locally from browser storage. No account,
+              backend, or tracking script is involved.
+            </p>
 
-            <div className="product-panel mt-6 p-4">
-              <div className="flex items-center justify-between border-b border-hairline pb-3">
-                <div>
-                  <p className="text-xs font-medium text-muted">Today</p>
-                  <p className="text-sm font-semibold text-primary">STA warmup</p>
-                </div>
-                <span className="badge-pill bg-emerald-100 text-ink-950">10Q</span>
+            <div className="mt-5 grid gap-3">
+              <div className="rounded-md border border-hairline bg-canvas p-4">
+                <p className="text-xs font-semibold uppercase tracking-normal text-muted">
+                  Highest focus area
+                </p>
+                <p className="mt-2 text-sm font-semibold text-primary">
+                  {focusArea}
+                </p>
               </div>
-              <div className="mt-4 grid grid-cols-5 gap-2">
-                {["RTL", "DV", "CDC", "STA", "EDA"].map((item, index) => (
-                  <div
-                    className={`rounded-md px-2 py-3 text-center text-xs font-semibold ${
-                      index === 3 ? "bg-action text-on-action" : "bg-surface-soft text-primary"
-                    }`}
-                    key={item}
-                  >
-                    {item}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-6 grid gap-3">
-              <button
-                className="button-primary"
-                onClick={() => navigate("practice")}
-                type="button"
-              >
-                <Play size={17} aria-hidden="true" />
-                Practice Mode
-              </button>
-              <button
-                className="button-secondary"
-                onClick={() => navigate("code")}
-                type="button"
-              >
-                <Code2 size={17} aria-hidden="true" />
-                Code Questions
-              </button>
-              <button
-                className="button-secondary"
-                onClick={() => navigate("programming-review")}
-                type="button"
-              >
-                <FileCode2 size={17} aria-hidden="true" />
-                Programming Review
-              </button>
-              <button
-                className="button-secondary"
-                onClick={() => navigate("hdlbits-review")}
-                type="button"
-              >
-                <BookOpenCheck size={17} aria-hidden="true" />
-                HDLBits Review
-              </button>
-              <button
-                className="button-secondary"
-                onClick={() => navigate("mock")}
-                type="button"
-              >
-                <Layers3 size={17} aria-hidden="true" />
-                Mock Interview Mode
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="grid gap-6 lg:grid-cols-[1fr_0.9fr]">
-        <div className="panel p-6">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h2 className="display-heading text-[28px] leading-tight">
-                Local analytics
-              </h2>
-              <p className="mt-2 text-sm text-body">
-                Accuracy is computed only in your browser from LocalStorage.
-                Nothing is sent to a server.
-              </p>
-            </div>
-            <span className="badge-pill bg-surface-soft text-primary">
-              No tracking
-            </span>
-          </div>
-
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <div className="product-panel p-4">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-card text-primary">
-                  <Target size={18} aria-hidden="true" />
-                </div>
-                <div>
-                  <p className="text-sm font-semibold text-primary">
-                    Most missed category
-                  </p>
-                  <p className="text-sm text-muted">{missedCategory}</p>
-                </div>
-              </div>
-            </div>
-            <div className="product-panel p-4">
-              <p className="text-sm font-semibold text-primary">
-                Difficulty accuracy
-              </p>
-              <div className="mt-4 space-y-3">
-                {(["easy", "medium", "hard"] as const).map((difficulty) => (
-                  <ProgressBar
-                    key={difficulty}
-                    label={`${difficulty} · ${
-                      analytics.byDifficulty[difficulty]?.attempted ?? 0
-                    } attempts`}
-                    value={accuracy(analytics.byDifficulty[difficulty])}
-                    max={100}
-                  />
-                ))}
-              </div>
+              {(["easy", "medium", "hard"] as const).map((difficulty) => (
+                <ProgressBar
+                  key={difficulty}
+                  label={`${difficulty} - ${
+                    analytics.byDifficulty[difficulty]?.attempted ?? 0
+                  } attempts`}
+                  value={accuracy(analytics.byDifficulty[difficulty])}
+                  max={100}
+                />
+              ))}
             </div>
           </div>
 
-          <div className="mt-4 grid gap-3 md:grid-cols-2">
-            {categories.map((category) => {
-              const bucket = analytics.byCategory[category];
-
-              return (
-                <div className="product-panel p-4" key={category}>
-                  <div className="mb-3 flex items-center justify-between gap-3">
-                    <span className="text-sm font-semibold text-primary">
-                      {category}
-                    </span>
-                    <span className="text-sm font-semibold text-muted">
-                      {accuracy(bucket)}%
-                    </span>
-                  </div>
-                  <ProgressBar value={accuracy(bucket)} max={100} />
-                  <p className="mt-2 text-xs text-muted">
-                    {bucket?.attempted ?? 0} attempted · {bucket?.missed ?? 0} missed
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="panel p-6">
-          <div className="flex h-full flex-col">
-            <div>
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-canvas text-primary">
-                <FileJson size={22} aria-hidden="true" />
-              </div>
-              <h2 className="display-heading mt-4 text-[28px] leading-tight">
-                Progress portability
-              </h2>
-              <p className="mt-2 text-sm leading-6 text-body">
-                Export wrong questions and accuracy analytics as a JSON file, or
-                import that JSON on another browser.
-              </p>
+          <div className="product-panel p-5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-md bg-surface-card text-primary">
+              <FileJson size={19} aria-hidden="true" />
             </div>
-
-            <div className="product-panel mt-6 p-4">
-              <div className="grid grid-cols-3 gap-2 text-center text-xs font-semibold">
-                <div className="rounded-md bg-surface-soft px-2 py-3">
-                  Wrong
-                  <span className="mt-1 block text-lg text-primary">{wrongCount}</span>
-                </div>
-                <div className="rounded-md bg-surface-soft px-2 py-3">
-                  Attempts
-                  <span className="mt-1 block text-lg text-primary">
-                    {analytics.totalAttempted}
-                  </span>
-                </div>
-                <div className="rounded-md bg-surface-soft px-2 py-3">
-                  Accuracy
-                  <span className="mt-1 block text-lg text-primary">
-                    {overallAccuracy}%
-                  </span>
-                </div>
-              </div>
-            </div>
+            <h2 className="display-heading mt-4 text-[24px] leading-tight">
+              Progress file
+            </h2>
+            <p className="mt-2 text-sm leading-6 text-body">
+              Export saved review items and analytics, or import the same JSON
+              on another browser.
+            </p>
 
             <input
               accept="application/json,.json"
@@ -348,7 +404,7 @@ export function Dashboard({
               ref={fileInputRef}
               type="file"
             />
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
               <button
                 className="button-primary"
                 onClick={onExportProgress}

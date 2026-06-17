@@ -43,7 +43,8 @@ export interface ProgressExport {
   version: 1;
   appVersion: string;
   exportedAt: string;
-  wrongQuestions: string[];
+  reviewItems: string[];
+  wrongQuestions?: string[];
   analytics: AnalyticsState;
   theme?: ThemePreference;
 }

@@ -1,8 +1,19 @@
-export const APP_VERSION = "1.2.17";
+export const APP_VERSION = "1.2.18";
 
 export const RELEASE_DATE = "2026-06-16";
 
 export const CHANGELOG = [
+  {
+    version: "1.2.18",
+    date: "2026-06-16",
+    title: "Dashboard workflow refresh",
+    changes: [
+      "Redesigned the dashboard into a clearer start workspace with grouped practice, code, mock, and review-library actions.",
+      "Removed the standalone saved-miss navigation/page design and replaced visible wording with neutral saved review items.",
+      "Promoted RTL Practice and Verilog Review into the Reference menu so review resources are easier to reach.",
+      "Removed accidental local verification artifacts from the repository.",
+    ],
+  },
   {
     version: "1.2.17",
     date: "2026-06-16",

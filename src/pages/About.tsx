@@ -204,9 +204,9 @@ export function About() {
                 Private progress
               </h3>
               <p className="mt-2 text-sm leading-6 text-body">
-                LocalStorage stores wrong questions, accuracy aggregates, and
-                theme preference in the browser. There is no account system,
-                backend API, analytics service, or user tracking.
+                LocalStorage stores saved review items, accuracy aggregates,
+                and theme preference in the browser. There is no account
+                system, backend API, analytics service, or user tracking.
               </p>
             </div>
           </div>

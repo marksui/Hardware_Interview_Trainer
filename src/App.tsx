@@ -1,5 +1,4 @@
 import {
-  AlertTriangle,
   BookOpenCheck,
   BrainCircuit,
   ClipboardList,
@@ -28,13 +27,11 @@ import { QuestionBank } from "./pages/QuestionBank";
 import { RtlDesignPracticeProblems } from "./pages/RtlDesignPracticeProblems";
 import { VerilogInterviewReview } from "./pages/VerilogInterviewReview";
 import { VersionHistory } from "./pages/VersionHistory";
-import { WrongQuestions } from "./pages/WrongQuestions";
 import type { ThemePreference } from "./types";
 import {
   getAnalytics,
   getProgressExport,
   getThemePreference,
-  getWrongQuestionIds,
   importProgress,
   setThemePreference,
 } from "./utils/storage";
@@ -47,7 +44,6 @@ type PageId =
   | "programming-review"
   | "practice"
   | "mock"
-  | "wrong"
   | "cheatsheet"
   | "hdlbits-review"
   | "about"
@@ -79,10 +75,6 @@ const pageMeta: Record<PageId, { title: string; subtitle: string }> = {
   mock: {
     title: "Mock Interview Mode",
     subtitle: "Run random, custom, NVIDIA-targeted, or flashcard-style interview rounds.",
-  },
-  wrong: {
-    title: "Wrong Questions",
-    subtitle: "Retry saved misses and remove them when the concept feels solid.",
   },
   cheatsheet: {
     title: "Cheatsheet",
@@ -119,22 +111,18 @@ const primaryNavItems = [
   { id: "programming-review", label: "Review", icon: FileCode2 },
   { id: "practice", label: "Practice", icon: BrainCircuit },
   { id: "mock", label: "Mock", icon: Timer },
-  { id: "wrong", label: "Wrong", icon: AlertTriangle },
 ] satisfies NavItem[];
 
 const secondaryNavItems = [
   { id: "cheatsheet", label: "Cheatsheet", icon: ClipboardList },
   { id: "hdlbits-review", label: "HDLBits", icon: BookOpenCheck },
+  { id: "rtl-practice", label: "RTL Practice", icon: Code2 },
+  { id: "verilog-review", label: "Verilog", icon: FileText },
   { id: "about", label: "About", icon: Info },
   { id: "versions", label: "Versions", icon: History },
 ] satisfies NavItem[];
 
-const footerOnlyNavItems = [
-  { id: "rtl-practice", label: "RTL Practice", icon: Code2 },
-  { id: "verilog-review", label: "Verilog Review", icon: FileText },
-] satisfies NavItem[];
-
-const navItems = [...primaryNavItems, ...secondaryNavItems, ...footerOnlyNavItems];
+const navItems = [...primaryNavItems, ...secondaryNavItems];
 
 function getPageFromHash(): PageId {
   const hash = window.location.hash.replace("#", "");
@@ -145,23 +133,19 @@ function getPageFromHash(): PageId {
 
 export default function App() {
   const [page, setPage] = useState<PageId>(() => getPageFromHash());
-  const [wrongIds, setWrongIds] = useState<string[]>(() => getWrongQuestionIds());
   const [analytics, setAnalytics] = useState(() => getAnalytics());
   const [theme, setTheme] = useState<ThemePreference>(() => getThemePreference());
   const [importStatus, setImportStatus] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
   const meta = pageMeta[page];
-  const wrongCount = wrongIds.length;
   const isSecondaryPage = secondaryNavItems.some((item) => item.id === page);
 
-  const refreshWrongIds = () => {
-    setWrongIds(getWrongQuestionIds());
+  const refreshAnalytics = () => {
     setAnalytics(getAnalytics());
   };
 
   const refreshProgress = () => {
-    setWrongIds(getWrongQuestionIds());
     setAnalytics(getAnalytics());
     setTheme(getThemePreference());
   };
@@ -230,17 +214,9 @@ export default function App() {
       case "programming-review":
         return <ProgrammingReview />;
       case "practice":
-        return <PracticeMode onWrongChanged={refreshWrongIds} />;
+        return <PracticeMode onReviewItemsChanged={refreshAnalytics} />;
       case "mock":
-        return <MockInterviewMode onWrongChanged={refreshWrongIds} />;
-      case "wrong":
-        return (
-          <WrongQuestions
-            navigate={navigate}
-            wrongIds={wrongIds}
-            onWrongChanged={refreshWrongIds}
-          />
-        );
+        return <MockInterviewMode onReviewItemsChanged={refreshAnalytics} />;
       case "cheatsheet":
         return <Cheatsheet />;
       case "hdlbits-review":
@@ -260,13 +236,12 @@ export default function App() {
             analytics={analytics}
             importStatus={importStatus}
             navigate={navigate}
-            wrongCount={wrongCount}
             onExportProgress={handleExportProgress}
             onImportProgress={handleImportProgress}
           />
         );
     }
-  }, [analytics, importStatus, page, wrongCount, wrongIds]);
+  }, [analytics, importStatus, page]);
 
   return (
     <div className="min-h-screen bg-canvas text-primary">
@@ -281,7 +256,7 @@ export default function App() {
               <BookOpenCheck size={22} aria-hidden="true" />
             </div>
             <div className="min-w-0">
-              <h1 className="display-heading text-[15px] leading-tight sm:text-lg">
+              <h1 className="display-heading truncate text-[15px] leading-tight sm:text-lg">
                 Hardware Interview Trainer
               </h1>
               <p className="truncate text-[11px] font-medium uppercase leading-5 tracking-normal text-muted sm:text-xs">
@@ -338,11 +313,6 @@ export default function App() {
                 >
                   <Icon size={16} aria-hidden="true" />
                   {item.label}
-                  {item.id === "wrong" && wrongCount > 0 ? (
-                    <span className="rounded-full bg-rose-100 px-1.5 py-0.5 text-xs font-semibold text-ink-950">
-                      {wrongCount}
-                    </span>
-                  ) : null}
                 </button>
               );
             })}
@@ -378,18 +348,13 @@ export default function App() {
                         <Icon size={16} aria-hidden="true" />
                         {item.label}
                       </span>
-                      {item.id === "wrong" && wrongCount > 0 ? (
-                        <span className="rounded-full bg-rose-100 px-1.5 py-0.5 text-xs font-semibold text-ink-950">
-                          {wrongCount}
-                        </span>
-                      ) : null}
                     </button>
                   );
                 })}
               </div>
 
-              <div className="grid gap-2 sm:grid-cols-4 lg:col-start-2 lg:min-w-[520px]">
-                <p className="px-3 text-xs font-semibold uppercase tracking-normal text-muted sm:col-span-4">
+              <div className="grid gap-2 sm:grid-cols-3 lg:col-start-2 lg:min-w-[760px] lg:grid-cols-6">
+                <p className="px-3 text-xs font-semibold uppercase tracking-normal text-muted sm:col-span-3 lg:col-span-6">
                   Reference
                 </p>
                 {secondaryNavItems.map((item) => {
@@ -484,9 +449,6 @@ export default function App() {
                 </button>
                 <button className="text-left text-on-dark-soft" onClick={() => navigate("mock")} type="button">
                   Mock Interview
-                </button>
-                <button className="text-left text-on-dark-soft" onClick={() => navigate("wrong")} type="button">
-                  Wrong Questions
                 </button>
               </div>
             </div>
